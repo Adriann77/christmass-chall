@@ -38,7 +38,7 @@ export async function POST(request: Request) {
     console.error('Create spending error:', error);
     return NextResponse.json(
       { error: 'Internal server error' },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -53,9 +53,13 @@ export async function GET() {
     }
 
     const session = JSON.parse(sessionCookie.value);
-    
+
     const now = new Date();
-    const currentDate = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const currentDate = new Date(
+      now.getFullYear(),
+      now.getMonth(),
+      now.getDate(),
+    );
     currentDate.setHours(0, 0, 0, 0);
 
     const task = await prisma.dailyTask.findUnique({
@@ -85,7 +89,7 @@ export async function GET() {
     console.error('Get spendings error:', error);
     return NextResponse.json(
       { error: 'Internal server error' },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

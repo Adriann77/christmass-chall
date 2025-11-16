@@ -4,7 +4,7 @@ import { prisma } from '@/lib/prisma';
 
 export async function PATCH(
   request: Request,
-  context: { params: Promise<{ id: string }> }
+  context: { params: Promise<{ id: string }> },
 ) {
   try {
     const cookieStore = await cookies();
@@ -47,7 +47,7 @@ export async function PATCH(
     console.error('Update task error:', error);
     return NextResponse.json(
       { error: 'Internal server error' },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

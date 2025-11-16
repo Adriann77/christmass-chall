@@ -9,7 +9,7 @@ export async function POST(request: Request) {
     if (!username || !password) {
       return NextResponse.json(
         { error: 'Username and password are required' },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -18,7 +18,7 @@ export async function POST(request: Request) {
     if (!user) {
       return NextResponse.json(
         { error: 'Invalid credentials' },
-        { status: 401 }
+        { status: 401 },
       );
     }
 
@@ -36,7 +36,7 @@ export async function POST(request: Request) {
     console.error('Login error:', error);
     return NextResponse.json(
       { error: 'Internal server error' },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

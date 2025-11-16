@@ -30,27 +30,32 @@ A beautiful, mobile-first web application for tracking daily challenges througho
 ### Installation
 
 1. Clone the repository:
+
 ```bash
 git clone <your-repo-url>
 cd christmas-chall
 ```
 
 2. Install dependencies:
+
 ```bash
 pnpm install
 ```
 
 3. Set up the database:
+
 ```bash
 pnpm db:seed
 ```
 
 This will create:
+
 - SQLite database file
 - Two demo users (adrian/adrian and justyna/justyna)
 - Daily task records for December 1-24, 2025
 
 4. Start the development server:
+
 ```bash
 pnpm dev
 ```
@@ -101,22 +106,47 @@ Each day from December 1-24, users can track completion of these tasks:
 
 ## 💾 Database
 
-The app uses SQLite for local development (stored in `prisma/dev.db`). The schema includes:
+The app uses different databases for development and production:
 
-- **User** - User accounts and authentication
-- **DailyTask** - Daily task completion tracking
-- **Spending** - Expense records with categories
+### Development
 
-To migrate to an online database later, simply:
-1. Update the `DATABASE_URL` in `.env`
-2. Change the provider in `prisma/schema.prisma`
-3. Run `npx prisma migrate deploy`
+- **SQLite** - Local file database (`prisma/dev.db`)
+- Fast and easy for local development
+- No additional setup required
+
+### Production
+
+- **PostgreSQL** - Via Prisma Accelerate
+- Scalable cloud database with caching
+- High performance and reliability
+
+See [DATABASE_SETUP.md](./DATABASE_SETUP.md) for detailed configuration instructions.
+
+### Quick Setup
+
+**Development:**
+
+```bash
+pnpm db:push:dev    # Push schema to SQLite
+pnpm db:seed        # Seed with demo data
+pnpm dev            # Start development server
+```
+
+**Production:**
+
+```bash
+./scripts/deploy-schema.sh  # Deploy schema to PostgreSQL
+pnpm build                   # Build for production
+```
+
+See [DEPLOYMENT.md](./DEPLOYMENT.md) for complete deployment guide.
 
 ## 🎨 Customization
 
 ### Colors
 
 Christmas-themed colors are defined in `app/globals.css`:
+
 - Primary: Christmas Red
 - Secondary: Christmas Green
 - Accent: Gold
@@ -128,6 +158,7 @@ To modify the daily tasks, edit the task array in `app/dashboard/page.tsx`
 ### Spending Categories
 
 Categories can be customized in `app/dashboard/spending/page.tsx` by modifying the `CATEGORIES` array. Current Polish categories:
+
 - Jedzenie i picie (Food & Dining)
 - Zakupy (Shopping)
 - Transport (Transportation)
@@ -139,6 +170,7 @@ Categories can be customized in `app/dashboard/spending/page.tsx` by modifying t
 ## 📱 Mobile Design
 
 The app features:
+
 - Minimal header with only logout button
 - Scrollable content area
 - Fixed bottom navigation bar for easy access to:
@@ -148,11 +180,26 @@ The app features:
 
 ## 🔧 Scripts
 
-- `pnpm dev` - Start development server
-- `pnpm build` - Build for production
-- `pnpm start` - Start production server
+### Development
+
+- `pnpm dev` - Start development server (uses SQLite)
+- `pnpm db:push:dev` - Push schema to development database
+- `pnpm db:migrate:dev` - Create and apply migrations for dev
 - `pnpm db:seed` - Seed the database with initial data
+
+### Production
+
+- `pnpm build` - Build for production (uses PostgreSQL)
+- `pnpm start` - Start production server
+- `pnpm db:push:prod` - Push schema to production database
+- `pnpm db:migrate:deploy` - Deploy migrations to production
+- `./scripts/deploy-schema.sh` - Interactive production deployment
+
+### General
+
 - `pnpm lint` - Run ESLint
+- `pnpm prisma generate` - Generate Prisma Client
+- `pnpm prisma studio` - Open Prisma Studio GUI
 
 ## 📦 Tech Stack
 
@@ -167,11 +214,13 @@ The app features:
 ## 🎉 Features by Page
 
 ### Login (`/login`)
+
 - Beautiful Christmas-themed login form (Wyzwanie Świąteczne)
 - Animated Christmas tree emoji
 - Demo account credentials displayed in Polish
 
 ### Dashboard (`/dashboard`)
+
 - Day counter (Dzień X z 24)
 - Progress bar showing task completion (Dzisiejszy postęp)
 - Interactive task checklist (Dzisiejsze zadania)
@@ -179,12 +228,14 @@ The app features:
 - Minimal header with logout button only
 
 ### Spending Tracker (`/dashboard/spending`)
+
 - Add expenses with amount, category, and description (Dodaj wydatek)
 - View all expenses for the current day (Dzisiejsze wydatki)
 - Total spending calculation (Łącznie wydane dzisiaj)
 - Categorized expense tracking in Polish
 
 ### Calendar View (`/dashboard/calendar`)
+
 - Visual 24-day calendar grid (Grudzień 2025)
 - Color-coded days (Podsumowanie):
   - 🌟 Perfekcyjne: All 5 tasks completed
@@ -196,17 +247,47 @@ The app features:
 
 ## 🚀 Deployment
 
-The app can be deployed to any platform that supports Next.js:
+The app can be deployed to any platform that supports Next.js. See [DEPLOYMENT.md](./DEPLOYMENT.md) for detailed instructions.
 
-- **Vercel** (recommended)
-- **Netlify**
-- **Railway**
-- **Fly.io**
+### Quick Deploy to Vercel
 
-Remember to:
-1. Set environment variables (`DATABASE_URL`, `NEXTAUTH_SECRET`)
-2. Run database migrations
-3. Update the database to a production-ready solution
+1. **Set environment variables** in Vercel dashboard:
+
+```env
+DATABASE_URL=prisma+postgres://accelerate.prisma-data.net/?api_key=YOUR_KEY
+NEXTAUTH_URL=https://your-domain.com
+NEXTAUTH_SECRET=your-secure-random-string
+NODE_ENV=production
+```
+
+2. **Deploy schema to production database:**
+
+```bash
+./scripts/deploy-schema.sh
+```
+
+3. **Deploy to Vercel:**
+
+```bash
+vercel --prod
+```
+
+### Supported Platforms
+
+- **Vercel** ⭐ (recommended - seamless Next.js integration)
+- **Railway** (great for full-stack apps)
+- **Fly.io** (global edge deployment)
+- **Netlify** (alternative to Vercel)
+- **Docker** (self-hosted option)
+
+### Important Notes
+
+- Production uses PostgreSQL via Prisma Accelerate
+- Development uses SQLite for local testing
+- Database schema is automatically deployed during build
+- All environment variables must be set in your hosting platform
+- See [DATABASE_SETUP.md](./DATABASE_SETUP.md) for database configuration
+- See [DEPLOYMENT.md](./DEPLOYMENT.md) for complete deployment checklist
 
 ## 📝 License
 

@@ -12,10 +12,14 @@ export async function GET() {
     }
 
     const session = JSON.parse(sessionCookie.value);
-    
+
     // Get current date - use actual date for the challenge
     const now = new Date();
-    const currentDate = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const currentDate = new Date(
+      now.getFullYear(),
+      now.getMonth(),
+      now.getDate(),
+    );
     currentDate.setHours(0, 0, 0, 0);
 
     const dailyTask = await prisma.dailyTask.findUnique({
@@ -49,7 +53,7 @@ export async function GET() {
     console.error('Get today task error:', error);
     return NextResponse.json(
       { error: 'Internal server error' },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

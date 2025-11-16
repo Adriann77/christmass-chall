@@ -34,14 +34,16 @@ async function main() {
   // Initialize daily tasks for all days from today until December 24, 2025
   const today = new Date();
   const christmasDate = new Date(2025, 11, 24);
-  
+
   // Start from today or December 1st, whichever is earlier
-  const startDate = new Date(Math.min(today.getTime(), new Date(2025, 11, 1).getTime()));
+  const startDate = new Date(
+    Math.min(today.getTime(), new Date(2025, 11, 1).getTime()),
+  );
   startDate.setHours(0, 0, 0, 0);
-  
+
   const endDate = new Date(christmasDate);
   endDate.setHours(0, 0, 0, 0);
-  
+
   // Create tasks for each day from start to end
   const currentDate = new Date(startDate);
   while (currentDate <= endDate) {
@@ -77,12 +79,14 @@ async function main() {
         date: date,
       },
     });
-    
+
     // Move to next day
     currentDate.setDate(currentDate.getDate() + 1);
   }
 
-  console.log(`✅ Seeded daily tasks from ${startDate.toLocaleDateString()} to ${endDate.toLocaleDateString()}`);
+  console.log(
+    `✅ Seeded daily tasks from ${startDate.toLocaleDateString()} to ${endDate.toLocaleDateString()}`,
+  );
 }
 
 main()

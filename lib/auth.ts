@@ -9,7 +9,7 @@ export interface AuthUser {
 
 export async function loginUser(
   username: string,
-  password: string
+  password: string,
 ): Promise<AuthUser | null> {
   try {
     const user = await prisma.user.findUnique({

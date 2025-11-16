@@ -1,0 +1,59 @@
+// This is your Prisma schema file for PRODUCTION
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+  directUrl = env("DATABASE_URL_DIRECT")
+}
+
+model User {
+  id        String   @id @default(uuid())
+  username  String   @unique
+  password  String
+  name      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  dailyTasks DailyTask[]
+  spendings  Spending[]
+}
+
+model DailyTask {
+  id          String   @id @default(uuid())
+  userId      String
+  date        DateTime
+  steps       Boolean  @default(false)
+  training    Boolean  @default(false)
+  diet        Boolean  @default(false)
+  book        Boolean  @default(false)
+  learning    Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  spendings   Spending[]
+
+  @@unique([userId, date])
+  @@index([userId])
+}
+
+model Spending {
+  id          String    @id @default(uuid())
+  userId      String
+  dailyTaskId String
+  amount      Float
+  category    String
+  description String?
+  createdAt   DateTime  @default(now())
+
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  dailyTask   DailyTask @relation(fields: [dailyTaskId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([dailyTaskId])
+}

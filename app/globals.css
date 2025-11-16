@@ -1,5 +1,5 @@
-@import "tailwindcss";
-@import "tw-animate-css";
+@import 'tailwindcss';
+@import 'tw-animate-css';
 
 @custom-variant dark (&:is(.dark *));
 
@@ -56,17 +56,17 @@
   --secondary: oklch(0.35 0.12 145); /* Christmas green */
   --secondary-foreground: oklch(1 0 0);
   --muted: oklch(0.96 0.01 25);
-  --muted-foreground: oklch(0.50 0.02 140);
+  --muted-foreground: oklch(0.5 0.02 140);
   --accent: oklch(0.85 0.12 60); /* Gold accent */
   --accent-foreground: oklch(0.15 0.02 140);
-  --destructive: oklch(0.50 0.22 25);
-  --border: oklch(0.90 0.02 140);
+  --destructive: oklch(0.5 0.22 25);
+  --border: oklch(0.9 0.02 140);
   --input: oklch(0.92 0.02 140);
   --ring: oklch(0.45 0.18 25);
   --chart-1: oklch(0.45 0.18 25); /* Red */
   --chart-2: oklch(0.35 0.12 145); /* Green */
   --chart-3: oklch(0.85 0.12 60); /* Gold */
-  --chart-4: oklch(0.70 0.08 140); /* Light green */
+  --chart-4: oklch(0.7 0.08 140); /* Light green */
   --chart-5: oklch(0.55 0.15 25); /* Dark red */
   --sidebar: oklch(0.98 0.01 140);
   --sidebar-foreground: oklch(0.15 0.02 140);
@@ -74,8 +74,8 @@
   --sidebar-primary-foreground: oklch(1 0 0);
   --sidebar-accent: oklch(0.96 0.01 25);
   --sidebar-accent-foreground: oklch(0.15 0.02 140);
-  --sidebar-border: oklch(0.90 0.02 140);
-  --sidebar-ring: oklch(0.50 0.18 25);
+  --sidebar-border: oklch(0.9 0.02 140);
+  --sidebar-ring: oklch(0.5 0.18 25);
 }
 
 .dark {
