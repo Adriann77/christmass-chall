@@ -15,9 +15,10 @@ import {
 } from '@/components/ui/card';
 import { motion } from 'framer-motion';
 
-export default function LoginPage() {
+export default function RegisterPage() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [name, setName] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const router = useRouter();
@@ -28,16 +29,16 @@ export default function LoginPage() {
     setLoading(true);
 
     try {
-      const response = await fetch('/api/auth/login', {
+      const response = await fetch('/api/auth/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username, password }),
+        body: JSON.stringify({ username, password, name }),
       });
 
       const data = await response.json();
 
       if (!response.ok) {
-        setError(data.error || 'Login failed');
+        setError(data.error || 'Registration failed');
         return;
       }
 
@@ -70,10 +71,10 @@ export default function LoginPage() {
               🎄
             </motion.div>
             <CardTitle className='text-3xl font-bold text-primary'>
-              Wyzwanie Świąteczne
+              Utwórz Konto
             </CardTitle>
             <CardDescription className='text-base'>
-              Śledź swoje codzienne cele do 24 grudnia!
+              Dołącz do wyzwania świątecznego!
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -82,15 +83,28 @@ export default function LoginPage() {
               className='space-y-4'
             >
               <div className='space-y-2'>
+                <Label htmlFor='name'>Imię</Label>
+                <Input
+                  id='name'
+                  type='text'
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  placeholder='Wprowadź swoje imię'
+                  required
+                  disabled={loading}
+                />
+              </div>
+              <div className='space-y-2'>
                 <Label htmlFor='username'>Nazwa użytkownika</Label>
                 <Input
                   id='username'
                   type='text'
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
-                  placeholder='Wprowadź nazwę użytkownika'
+                  placeholder='Wybierz nazwę użytkownika'
                   required
                   disabled={loading}
+                  minLength={3}
                 />
               </div>
               <div className='space-y-2'>
@@ -100,9 +114,10 @@ export default function LoginPage() {
                   type='password'
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  placeholder='Wprowadź hasło'
+                  placeholder='Wybierz hasło'
                   required
                   disabled={loading}
+                  minLength={6}
                 />
               </div>
               {error && (
@@ -119,19 +134,16 @@ export default function LoginPage() {
                 className='w-full'
                 disabled={loading}
               >
-                {loading ? 'Logowanie...' : 'Zaloguj się'}
+                {loading ? 'Tworzenie konta...' : 'Zarejestruj się'}
               </Button>
               <p className='text-sm text-center text-muted-foreground mt-4'>
-                Nie masz konta?{' '}
+                Masz już konto?{' '}
                 <Link
-                  href='/register'
+                  href='/login'
                   className='text-primary hover:underline font-medium'
                 >
-                  Zarejestruj się
+                  Zaloguj się
                 </Link>
-              </p>
-              <p className='text-xs text-muted-foreground text-center'>
-                Konta demo: adrian/adrian lub justyna/justyna
               </p>
             </form>
           </CardContent>

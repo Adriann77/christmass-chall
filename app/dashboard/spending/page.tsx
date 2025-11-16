@@ -157,7 +157,7 @@ export default function SpendingPage() {
             <Card className='bg-secondary text-secondary-foreground border-2'>
               <CardHeader className='pb-3'>
                 <CardTitle className='text-center text-3xl'>
-                  ${totalSpending.toFixed(2)}
+                  {totalSpending.toFixed(2)} zł
                 </CardTitle>
                 <p className='text-center text-sm text-secondary-foreground/80'>
                   Łącznie wydane dzisiaj
@@ -189,7 +189,7 @@ export default function SpendingPage() {
                 className='space-y-4'
               >
                 <div className='space-y-2'>
-                  <Label htmlFor='amount'>Kwota ($)</Label>
+                  <Label htmlFor='amount'>Kwota (zł)</Label>
                   <Input
                     id='amount'
                     type='number'
@@ -268,7 +268,7 @@ export default function SpendingPage() {
                       <div className='flex justify-between items-start'>
                         <div className='flex-1'>
                           <p className='font-semibold text-lg'>
-                            ${spending.amount.toFixed(2)}
+                            {spending.amount.toFixed(2)} zł
                           </p>
                           <p className='text-sm text-muted-foreground'>
                             {spending.category}
