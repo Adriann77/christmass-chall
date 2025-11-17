@@ -22,6 +22,8 @@ import {
   LogOut,
   DollarSign,
   CheckSquare,
+  Salad,
+  Droplet,
 } from 'lucide-react';
 import Link from 'next/link';
 
@@ -33,6 +35,7 @@ interface DailyTask {
   diet: boolean;
   book: boolean;
   learning: boolean;
+  water: boolean;
   spendings: unknown[];
 }
 
@@ -42,6 +45,7 @@ const tasks = [
   { key: 'diet', label: 'Zdrowa dieta', icon: Apple },
   { key: 'book', label: 'Czytanie książki', icon: Book },
   { key: 'learning', label: 'Nauka (1 godzina)', icon: GraduationCap },
+  { key: 'water', label: '2.5 litra wody', icon: Droplet },
 ];
 
 export default function DashboardPage() {
@@ -287,6 +291,13 @@ export default function DashboardPage() {
             >
               <DollarSign className='h-6 w-6' />
               <span className='text-xs'>Wydatki</span>
+            </Link>
+            <Link
+              href='/dashboard/diet'
+              className='flex flex-col items-center gap-1 text-muted-foreground hover:text-foreground'
+            >
+              <Salad className='h-6 w-6' />
+              <span className='text-xs'>Dieta</span>
             </Link>
             <Link
               href='/dashboard/calendar'

@@ -14,7 +14,7 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog';
 import { motion } from 'framer-motion';
-import { Calendar, CheckSquare, DollarSign, LogOut, Plus } from 'lucide-react';
+import { Calendar, CheckSquare, DollarSign, LogOut, Plus, Salad } from 'lucide-react';
 import Link from 'next/link';
 
 interface Spending {
@@ -312,6 +312,13 @@ export default function SpendingPage() {
             >
               <DollarSign className='h-6 w-6' />
               <span className='text-xs font-medium'>Wydatki</span>
+            </Link>
+            <Link
+              href='/dashboard/diet'
+              className='flex flex-col items-center gap-1 text-muted-foreground hover:text-foreground'
+            >
+              <Salad className='h-6 w-6' />
+              <span className='text-xs'>Dieta</span>
             </Link>
             <Link
               href='/dashboard/calendar'

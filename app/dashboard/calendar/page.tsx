@@ -19,6 +19,7 @@ import {
   LogOut,
   ChevronLeft,
   ChevronRight,
+  Salad,
 } from 'lucide-react';
 import Link from 'next/link';
 
@@ -598,6 +599,13 @@ export default function CalendarPage() {
             >
               <DollarSign className='h-6 w-6' />
               <span className='text-xs'>Wydatki</span>
+            </Link>
+            <Link
+              href='/dashboard/diet'
+              className='flex flex-col items-center gap-1 text-muted-foreground hover:text-foreground'
+            >
+              <Salad className='h-6 w-6' />
+              <span className='text-xs'>Dieta</span>
             </Link>
             <Link
               href='/dashboard/calendar'

@@ -1,0 +1,505 @@
+[
+  {
+    "day": 1,
+    "total": {
+      "kcal": 2330,
+      "protein": 172,
+      "fat": 107,
+      "carbs": 120
+    },
+    "meals": [
+      {
+        "name": "Białkowy Mix z Orzechami",
+        "kcal": 760,
+        "protein": 59,
+        "fat": 36,
+        "carbs": 35,
+        "ingredients": [
+          {
+            "name": "Serek wiejski",
+            "kcal": 280,
+            "protein": 28,
+            "fat": 13,
+            "carbs": 8
+          },
+          { "name": "Banan", "kcal": 120, "protein": 1, "fat": 0.3, "carbs": 22 },
+          {
+            "name": "Whey 30 g",
+            "kcal": 130,
+            "protein": 23,
+            "fat": 2,
+            "carbs": 3
+          },
+          {
+            "name": "Migdały 30 g",
+            "kcal": 180,
+            "protein": 6,
+            "fat": 16,
+            "carbs": 2
+          },
+          {
+            "name": "Czekolada 100% 10 g",
+            "kcal": 60,
+            "protein": 1,
+            "fat": 5,
+            "carbs": 0
+          }
+        ]
+      },
+      {
+        "name": "Jajecznica Energetyczna + Skyr",
+        "kcal": 830,
+        "protein": 50,
+        "fat": 48,
+        "carbs": 20,
+        "ingredients": [
+          {
+            "name": "Boczek 50 g",
+            "kcal": 140,
+            "protein": 7.5,
+            "fat": 12,
+            "carbs": 0
+          },
+          {
+            "name": "Oliwa 10 g",
+            "kcal": 90,
+            "protein": 0,
+            "fat": 10,
+            "carbs": 0
+          },
+          {
+            "name": "Jajka 3 szt",
+            "kcal": 250,
+            "protein": 23,
+            "fat": 18,
+            "carbs": 1
+          },
+          {
+            "name": "Warzywa mrożone 200 g",
+            "kcal": 80,
+            "protein": 3,
+            "fat": 0,
+            "carbs": 12
+          },
+          {
+            "name": "Skyr 150 g",
+            "kcal": 120,
+            "protein": 17,
+            "fat": 0,
+            "carbs": 7
+          },
+          {
+            "name": "Whey 10 g",
+            "kcal": 50,
+            "protein": 8,
+            "fat": 0.5,
+            "carbs": 1
+          }
+        ]
+      },
+      {
+        "name": "Omlet Skyr Power + Whey",
+        "kcal": 740,
+        "protein": 63,
+        "fat": 23,
+        "carbs": 65,
+        "ingredients": [
+          {
+            "name": "Skyr 150 g",
+            "kcal": 100,
+            "protein": 17,
+            "fat": 0,
+            "carbs": 7
+          },
+          {
+            "name": "Jajko 1 szt",
+            "kcal": 80,
+            "protein": 7,
+            "fat": 5,
+            "carbs": 1
+          },
+          {
+            "name": "Whey 30 g",
+            "kcal": 130,
+            "protein": 23,
+            "fat": 2,
+            "carbs": 3
+          },
+          {
+            "name": "Mąka owsiana 20 g",
+            "kcal": 70,
+            "protein": 2.5,
+            "fat": 1.5,
+            "carbs": 12
+          },
+          {
+            "name": "Oliwa 10 g",
+            "kcal": 90,
+            "protein": 0,
+            "fat": 10,
+            "carbs": 0
+          },
+          { "name": "Banan", "kcal": 120, "protein": 1, "fat": 0.3, "carbs": 22 },
+          {
+            "name": "Czekolada 100% 10 g",
+            "kcal": 60,
+            "protein": 1,
+            "fat": 5,
+            "carbs": 0
+          },
+          {
+            "name": "Wafle ryżowe 25 g",
+            "kcal": 90,
+            "protein": 1,
+            "fat": 0.5,
+            "carbs": 20
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "day": 2,
+    "total": {
+      "kcal": 2310,
+      "protein": 176,
+      "fat": 101,
+      "carbs": 128
+    },
+    "meals": [
+      {
+        "name": "Słodki Białkowy Starter",
+        "kcal": 770,
+        "protein": 61,
+        "fat": 34,
+        "carbs": 38,
+        "ingredients": [
+          {"name": "Serek wiejski", "kcal": 280, "protein": 28, "fat": 13, "carbs": 8},
+          {"name": "Banan", "kcal": 120, "protein": 1, "fat": 0.3, "carbs": 22},
+          {"name": "Whey 30 g", "kcal": 130, "protein": 23, "fat": 2, "carbs": 3},
+          {"name": "Migdały 25 g", "kcal": 150, "protein": 5, "fat": 13, "carbs": 2},
+          {"name": "Czekolada 100% 10 g", "kcal": 60, "protein": 1, "fat": 5, "carbs": 0},
+          {"name": "Wafle ryżowe 10 g", "kcal": 30, "protein": 0.7, "fat": 0.2, "carbs": 7}
+        ]
+      },
+      {
+        "name": "Szakszuka Proteinowa",
+        "kcal": 780,
+        "protein": 54,
+        "fat": 44,
+        "carbs": 28,
+        "ingredients": [
+          {"name": "Jajka 3 szt", "kcal": 250, "protein": 23, "fat": 18, "carbs": 1},
+          {"name": "Oliwa 15 g", "kcal": 135, "protein": 0, "fat": 15, "carbs": 0},
+          {"name": "Pomidory krojone 200 g", "kcal": 40, "protein": 2, "fat": 0, "carbs": 9},
+          {"name": "Papryka 150 g", "kcal": 45, "protein": 1.5, "fat": 0, "carbs": 9},
+          {"name": "Tofu 180 g", "kcal": 230, "protein": 12, "fat": 7.5, "carbs": 2},
+          {"name": "Whey 10 g", "kcal": 50, "protein": 8, "fat": 0.5, "carbs": 1},
+          {"name": "Przyprawy", "kcal": 0, "protein": 0, "fat": 0, "carbs": 0}
+        ]
+      },
+      {
+        "name": "Białkowy Omlet z Owocami",
+        "kcal": 760,
+        "protein": 61,
+        "fat": 23,
+        "carbs": 62,
+        "ingredients": [
+          {"name": "Jajka 2 szt", "kcal": 160, "protein": 14, "fat": 10, "carbs": 2},
+          {"name": "Skyr 150 g", "kcal": 100, "protein": 17, "fat": 0, "carbs": 7},
+          {"name": "Mąka owsiana 25 g", "kcal": 90, "protein": 3, "fat": 2, "carbs": 15},
+          {"name": "Whey 30 g", "kcal": 130, "protein": 23, "fat": 2, "carbs": 3},
+          {"name": "Truskawki 100 g", "kcal": 35, "protein": 1, "fat": 0.2, "carbs": 8},
+          {"name": "Oliwa 10 g", "kcal": 90, "protein": 0, "fat": 10, "carbs": 0},
+          {"name": "Czekolada 100% 10 g", "kcal": 60, "protein": 1, "fat": 5, "carbs": 0},
+          {"name": "Wafle ryżowe 20 g", "kcal": 80, "protein": 1, "fat": 0.4, "carbs": 16}
+        ]
+      }
+    ]
+  },
+  {
+    "day": 3,
+    "total": {
+      "kcal": 2325,
+      "protein": 178,
+      "fat": 104,
+      "carbs": 132
+    },
+    "meals": [
+      {
+        "name": "Creamy Protein Bowl",
+        "kcal": 760,
+        "protein": 60,
+        "fat": 34,
+        "carbs": 40,
+        "ingredients": [
+          {"name": "Serek wiejski", "kcal": 280, "protein": 28, "fat": 13, "carbs": 8},
+          {"name": "Banan", "kcal": 120, "protein": 1, "fat": 0.3, "carbs": 22},
+          {"name": "Whey 30 g", "kcal": 130, "protein": 23, "fat": 2, "carbs": 3},
+          {"name": "Migdały 20 g", "kcal": 120, "protein": 4, "fat": 11, "carbs": 2},
+          {"name": "Czekolada 100% 10 g", "kcal": 60, "protein": 1, "fat": 5, "carbs": 0},
+          {"name": "Wafle ryżowe 10 g", "kcal": 30, "protein": 0.7, "fat": 0.2, "carbs": 7}
+        ]
+      },
+      {
+        "name": "Tofu Stir Fry High Protein",
+        "kcal": 815,
+        "protein": 56,
+        "fat": 44,
+        "carbs": 34,
+        "ingredients": [
+          {"name": "Tofu 250 g", "kcal": 320, "protein": 16, "fat": 10, "carbs": 3},
+          {"name": "Oliwa 15 g", "kcal": 135, "protein": 0, "fat": 15, "carbs": 0},
+          {"name": "Warzywa mrożone 300 g", "kcal": 120, "protein": 4, "fat": 0, "carbs": 18},
+          {"name": "Sos sojowy 10 g", "kcal": 10, "protein": 2, "fat": 0, "carbs": 1},
+          {"name": "Ryż 50 g (suchy)", "kcal": 180, "protein": 4, "fat": 0.5, "carbs": 38},
+          {"name": "Whey 10 g", "kcal": 50, "protein": 8, "fat": 0.5, "carbs": 1}
+        ]
+      },
+      {
+        "name": "Protein Pancakes Deluxe",
+        "kcal": 750,
+        "protein": 62,
+        "fat": 26,
+        "carbs": 58,
+        "ingredients": [
+          {"name": "Skyr 150 g", "kcal": 100, "protein": 17, "fat": 0, "carbs": 7},
+          {"name": "Jajka 2 szt", "kcal": 160, "protein": 14, "fat": 10, "carbs": 2},
+          {"name": "Whey 30 g", "kcal": 130, "protein": 23, "fat": 2, "carbs": 3},
+          {"name": "Mąka owsiana 25 g", "kcal": 90, "protein": 3, "fat": 2, "carbs": 15},
+          {"name": "Oliwa 10 g", "kcal": 90, "protein": 0, "fat": 10, "carbs": 0},
+          {"name": "Truskawki 150 g", "kcal": 50, "protein": 1, "fat": 0.3, "carbs": 12},
+          {"name": "Czekolada 100% 10 g", "kcal": 60, "protein": 1, "fat": 5, "carbs": 0},
+          {"name": "Wafle ryżowe 15 g", "kcal": 60, "protein": 0.8, "fat": 0.3, "carbs": 12}
+        ]
+      }
+    ]
+  },
+  {
+    "day": 4,
+    "total": {
+      "kcal": 2320,
+      "protein": 173,
+      "fat": 98,
+      "carbs": 155
+    },
+    "meals": [
+      {
+        "name": "Twaróg + Jogurt + Crunch Protein",
+        "kcal": 820,
+        "protein": 67,
+        "fat": 32,
+        "carbs": 45,
+        "ingredients": [
+          {"name": "Twaróg półtłusty 150 g", "kcal": 190, "protein": 30, "fat": 11, "carbs": 6},
+          {"name": "Jogurt naturalny 200 g", "kcal": 140, "protein": 10, "fat": 6, "carbs": 8},
+          {"name": "Whey 30 g", "kcal": 130, "protein": 23, "fat": 2, "carbs": 3},
+          {"name": "Migdały 30 g", "kcal": 180, "protein": 6, "fat": 16, "carbs": 2},
+          {"name": "Wafle ryżowe 20 g", "kcal": 90, "protein": 1, "fat": 0.5, "carbs": 20},
+          {"name": "Czekolada 100% 10 g", "kcal": 60, "protein": 1, "fat": 5, "carbs": 0}
+        ]
+      },
+      {
+        "name": "Jajka z Warzywami XXL + Whey",
+        "kcal": 790,
+        "protein": 52,
+        "fat": 40,
+        "carbs": 30,
+        "ingredients": [
+          {"name": "Jajka 3 szt", "kcal": 250, "protein": 23, "fat": 18, "carbs": 1},
+          {"name": "Oliwa 10 g", "kcal": 90, "protein": 0, "fat": 10, "carbs": 0},
+          {"name": "Boczek 50 g", "kcal": 140, "protein": 7.5, "fat": 12, "carbs": 0},
+          {"name": "Warzywa mieszane 250 g", "kcal": 100, "protein": 5, "fat": 0, "carbs": 20},
+          {"name": "Whey 30 g", "kcal": 130, "protein": 23, "fat": 2, "carbs": 3},
+          {"name": "Przyprawy", "kcal": 0, "protein": 0, "fat": 0, "carbs": 0}
+        ]
+      },
+      {
+        "name": "Huel + Chia + Whey",
+        "kcal": 710,
+        "protein": 54,
+        "fat": 26,
+        "carbs": 80,
+        "ingredients": [
+          {"name": "Huel 100 g", "kcal": 440, "protein": 44, "fat": 20, "carbs": 20},
+          {"name": "Nasiona chia 15 g", "kcal": 75, "protein": 2.5, "fat": 5, "carbs": 6},
+          {"name": "Truskawki 100 g", "kcal": 35, "protein": 1, "fat": 0.3, "carbs": 8},
+          {"name": "Whey 10 g", "kcal": 50, "protein": 8, "fat": 0.5, "carbs": 1},
+          {"name": "Chipsy jabłkowe 50 g", "kcal": 110, "protein": 0, "fat": 0, "carbs": 45}
+        ]
+      }
+    ]
+  },
+  {
+    "day": 5,
+    "total": {
+      "kcal": 2340,
+      "protein": 178,
+      "fat": 88,
+      "carbs": 170
+    },
+    "meals": [
+      {
+        "name": "Skyr Protein Breakfast ++",
+        "kcal": 810,
+        "protein": 70,
+        "fat": 20,
+        "carbs": 45,
+        "ingredients": [
+          {"name": "Skyr 200 g", "kcal": 130, "protein": 24, "fat": 0, "carbs": 9},
+          {"name": "Banan 1 szt", "kcal": 120, "protein": 1, "fat": 0.3, "carbs": 22},
+          {"name": "Whey 30 g", "kcal": 130, "protein": 23, "fat": 2, "carbs": 3},
+          {"name": "Płatki owsiane 50 g", "kcal": 180, "protein": 6, "fat": 3, "carbs": 30},
+          {"name": "Migdały 20 g", "kcal": 120, "protein": 4, "fat": 11, "carbs": 2},
+          {"name": "Czekolada 100% 10 g", "kcal": 60, "protein": 1, "fat": 5, "carbs": 0},
+          {"name": "Nasiona chia 10 g", "kcal": 50, "protein": 1.5, "fat": 3, "carbs": 3},
+          {"name": "Wafle ryżowe 20 g", "kcal": 60, "protein": 1, "fat": 0.5, "carbs": 16}
+        ]
+      },
+      {
+        "name": "Tofu & Rice Comfort Protein",
+        "kcal": 770,
+        "protein": 45,
+        "fat": 25,
+        "carbs": 70,
+        "ingredients": [
+          {"name": "Tofu 200 g", "kcal": 250, "protein": 14, "fat": 7, "carbs": 2},
+          {"name": "Ryż 60 g (suchy)", "kcal": 220, "protein": 5, "fat": 0.5, "carbs": 48},
+          {"name": "Brokuły 150 g", "kcal": 50, "protein": 4, "fat": 0, "carbs": 10},
+          {"name": "Oliwa 10 g", "kcal": 90, "protein": 0, "fat": 10, "carbs": 0},
+          {"name": "Whey 30 g", "kcal": 130, "protein": 22, "fat": 2, "carbs": 3},
+          {"name": "Przyprawy", "kcal": 0, "protein": 0, "fat": 0, "carbs": 0}
+        ]
+      },
+      {
+        "name": "Owsiany Shake Protein+",
+        "kcal": 760,
+        "protein": 63,
+        "fat": 27,
+        "carbs": 55,
+        "ingredients": [
+          {"name": "Płatki owsiane 30 g", "kcal": 110, "protein": 4, "fat": 2, "carbs": 18},
+          {"name": "Skyr 150 g", "kcal": 100, "protein": 17, "fat": 0, "carbs": 7},
+          {"name": "Whey 30 g", "kcal": 130, "protein": 23, "fat": 2, "carbs": 3},
+          {"name": "Mleko 130 g", "kcal": 65, "protein": 4, "fat": 2, "carbs": 6},
+          {"name": "Truskawki 60 g", "kcal": 20, "protein": 0.5, "fat": 0.1, "carbs": 4},
+          {"name": "Nasiona chia 10 g", "kcal": 50, "protein": 1.5, "fat": 3, "carbs": 3},
+          {"name": "Migdały 15 g", "kcal": 90, "protein": 3, "fat": 7, "carbs": 2},
+          {"name": "Czekolada 100% 10 g", "kcal": 60, "protein": 1, "fat": 5, "carbs": 0}
+        ]
+      }
+    ]
+  },
+  {
+    "day": 6,
+    "total": {
+      "kcal": 2310,
+      "protein": 171,
+      "fat": 92,
+      "carbs": 155
+    },
+    "meals": [
+      {
+        "name": "Twaróg Sweet Mix + Whey",
+        "kcal": 800,
+        "protein": 67,
+        "fat": 30,
+        "carbs": 40,
+        "ingredients": [
+          {"name": "Twaróg półtłusty 150 g", "kcal": 190, "protein": 30, "fat": 11, "carbs": 6},
+          {"name": "Jogurt naturalny 200 g", "kcal": 140, "protein": 10, "fat": 6, "carbs": 8},
+          {"name": "Whey 30 g", "kcal": 130, "protein": 23, "fat": 2, "carbs": 3},
+          {"name": "Migdały 20 g", "kcal": 120, "protein": 4, "fat": 11, "carbs": 2},
+          {"name": "Banan 1 szt", "kcal": 120, "protein": 1, "fat": 0.3, "carbs": 22},
+          {"name": "Czekolada 100% 10 g", "kcal": 60, "protein": 1, "fat": 5, "carbs": 0},
+          {"name": "Wafle ryżowe 15 g", "kcal": 30, "protein": 0.7, "fat": 0.2, "carbs": 7}
+        ]
+      },
+      {
+        "name": "Sałatkowy Boost Protein",
+        "kcal": 740,
+        "protein": 52,
+        "fat": 33,
+        "carbs": 37,
+        "ingredients": [
+          {"name": "Sałatka proteinowa z Lidla 200 g", "kcal": 320, "protein": 20, "fat": 15, "carbs": 23},
+          {"name": "Tofu 150 g", "kcal": 190, "protein": 10, "fat": 5, "carbs": 1},
+          {"name": "Brokuły 150 g", "kcal": 50, "protein": 4, "fat": 0, "carbs": 10},
+          {"name": "Oliwa 10 g", "kcal": 90, "protein": 0, "fat": 10, "carbs": 0},
+          {"name": "Whey 10 g", "kcal": 50, "protein": 8, "fat": 0.5, "carbs": 1},
+          {"name": "Przyprawy", "kcal": 0, "protein": 0, "fat": 0, "carbs": 0}
+        ]
+      },
+      {
+        "name": "Omlet Skyr Power ++",
+        "kcal": 770,
+        "protein": 52,
+        "fat": 27,
+        "carbs": 78,
+        "ingredients": [
+          {"name": "Skyr 150 g", "kcal": 100, "protein": 17, "fat": 0, "carbs": 7},
+          {"name": "Jajka 2 szt", "kcal": 160, "protein": 14, "fat": 10, "carbs": 2},
+          {"name": "Mąka owsiana 30 g", "kcal": 110, "protein": 3, "fat": 2, "carbs": 18},
+          {"name": "Whey 30 g", "kcal": 130, "protein": 23, "fat": 2, "carbs": 3},
+          {"name": "Banan 1 szt", "kcal": 120, "protein": 1, "fat": 0.3, "carbs": 22},
+          {"name": "Czekolada 100% 10 g", "kcal": 60, "protein": 1, "fat": 5, "carbs": 0},
+          {"name": "Oliwa 10 g", "kcal": 90, "protein": 0, "fat": 10, "carbs": 0},
+          {"name": "Truskawki 100 g", "kcal": 50, "protein": 1, "fat": 0.3, "carbs": 6}
+        ]
+      }
+    ]
+  },
+  {
+    "day": 7,
+    "total": {
+      "kcal": 2340,
+      "protein": 170,
+      "fat": 87,
+      "carbs": 180
+    },
+    "meals": [
+      {
+        "name": "Białkowy Mix z Orzechami + Whey",
+        "kcal": 820,
+        "protein": 72,
+        "fat": 36,
+        "carbs": 35,
+        "ingredients": [
+          {"name": "Serek wiejski", "kcal": 280, "protein": 28, "fat": 13, "carbs": 8},
+          {"name": "Banan", "kcal": 120, "protein": 1, "fat": 0.3, "carbs": 22},
+          {"name": "Whey 30 g", "kcal": 130, "protein": 23, "fat": 2, "carbs": 3},
+          {"name": "Migdały 30 g", "kcal": 180, "protein": 6, "fat": 16, "carbs": 2},
+          {"name": "Czekolada 100% 10 g", "kcal": 60, "protein": 1, "fat": 5, "carbs": 0},
+          {"name": "Wafle ryżowe 20 g", "kcal": 50, "protein": 1, "fat": 0.5, "carbs": 7}
+        ]
+      },
+      {
+        "name": "Huel Full Meal + Whey Shot",
+        "kcal": 810,
+        "protein": 68,
+        "fat": 24,
+        "carbs": 55,
+        "ingredients": [
+          {"name": "Huel 100 g", "kcal": 440, "protein": 44, "fat": 20, "carbs": 20},
+          {"name": "Chipsy jabłkowe 50 g", "kcal": 130, "protein": 0, "fat": 0, "carbs": 35},
+          {"name": "Smoothie owocowe 130 g", "kcal": 130, "protein": 2, "fat": 0, "carbs": 30},
+          {"name": "Whey 20 g", "kcal": 110, "protein": 22, "fat": 1, "carbs": 2}
+        ]
+      },
+      {
+        "name": "Tofu Rice Bowl Protein",
+        "kcal": 710,
+        "protein": 30,
+        "fat": 27,
+        "carbs": 90,
+        "ingredients": [
+          {"name": "Tofu 180 g", "kcal": 230, "protein": 12, "fat": 7.5, "carbs": 2},
+          {"name": "Ryż 70 g (suchy)", "kcal": 250, "protein": 5, "fat": 0.5, "carbs": 56},
+          {"name": "Brokuły i kalafior 200 g", "kcal": 70, "protein": 4, "fat": 0, "carbs": 14},
+          {"name": "Oliwa 10 g", "kcal": 90, "protein": 0, "fat": 10, "carbs": 0},
+          {"name": "Whey 30 g", "kcal": 70, "protein": 9, "fat": 0.5, "carbs": 4}
+        ]
+      }
+    ]
+  }
+]

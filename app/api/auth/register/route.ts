@@ -30,10 +30,7 @@ export async function POST(request: Request) {
     const result = await registerUser(username, password, name);
 
     if (!result.success) {
-      return NextResponse.json(
-        { error: result.error },
-        { status: 400 },
-      );
+      return NextResponse.json({ error: result.error }, { status: 400 });
     }
 
     // Set session cookie

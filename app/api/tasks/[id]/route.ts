@@ -36,6 +36,7 @@ export async function PATCH(
         diet: body.diet ?? task.diet,
         book: body.book ?? task.book,
         learning: body.learning ?? task.learning,
+        water: body.water ?? task.water,
       },
       include: {
         spendings: true,
