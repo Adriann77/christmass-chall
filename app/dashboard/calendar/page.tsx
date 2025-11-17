@@ -259,9 +259,9 @@ export default function CalendarPage() {
   }
 
   return (
-    <div className='min-h-screen flex flex-col bg-background'>
+    <div className='h-screen flex flex-col bg-background overflow-hidden'>
       {/* Header */}
-      <header className='sticky top-0 z-10 flex justify-end px-4 py-2'>
+      <header className='shrink-0 flex justify-end px-4 py-2 border-b bg-background'>
         <Button
           variant='ghost'
           size='icon'

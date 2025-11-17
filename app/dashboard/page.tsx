@@ -210,9 +210,9 @@ export default function DashboardPage() {
   const progress = totalTasks > 0 ? (completedTasks / totalTasks) * 100 : 0;
 
   return (
-    <div className='min-h-screen flex flex-col bg-background'>
+    <div className='h-screen flex flex-col bg-background overflow-hidden'>
       {/* Header */}
-      <header className='sticky top-0 z-10 flex justify-between items-center px-4 py-2'>
+      <header className='shrink-0 flex justify-between items-center px-4 py-2 border-b bg-background'>
         <Link href='/dashboard/settings/tasks'>
           <Button variant='ghost' size='icon'>
             <Settings className='h-5 w-5' />

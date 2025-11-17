@@ -191,9 +191,9 @@ export default function TaskTemplatesPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-red-50 via-green-50 to-red-50 pb-20">
+    <div className="h-screen flex flex-col bg-gradient-to-br from-red-50 via-green-50 to-red-50 overflow-hidden">
       {/* Header */}
-      <div className="bg-gradient-to-r from-red-600 to-green-600 text-white p-4 shadow-lg sticky top-0 z-10">
+      <div className="shrink-0 bg-gradient-to-r from-red-600 to-green-600 text-white p-4 shadow-lg">
         <div className="container mx-auto flex items-center justify-between">
           <div className="flex items-center gap-3">
             <Button
@@ -294,7 +294,8 @@ export default function TaskTemplatesPage() {
       </div>
 
       {/* Content */}
-      <div className="container mx-auto p-4 space-y-4">
+      <div className="flex-1 overflow-y-auto">
+        <div className="container mx-auto p-4 space-y-4">
         {templates.length === 0 ? (
           <Card className="p-8 text-center">
             <p className="text-gray-500 mb-4">
@@ -352,6 +353,7 @@ export default function TaskTemplatesPage() {
             );
           })
         )}
+        </div>
       </div>
     </div>
   );

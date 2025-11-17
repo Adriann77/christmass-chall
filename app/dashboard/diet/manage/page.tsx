@@ -160,8 +160,8 @@ export default function DietManagePage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-red-50 via-green-50 to-red-50 pb-20">
-      <div className="bg-gradient-to-r from-red-600 to-green-600 text-white p-4 shadow-lg sticky top-0 z-10">
+    <div className="h-screen flex flex-col bg-gradient-to-br from-red-50 via-green-50 to-red-50 overflow-hidden">
+      <div className="shrink-0 bg-gradient-to-r from-red-600 to-green-600 text-white p-4 shadow-lg">
         <div className="container mx-auto flex items-center justify-between">
           <div className="flex items-center gap-3">
             <Button
@@ -327,7 +327,8 @@ export default function DietManagePage() {
         </div>
       </div>
 
-      <div className="container mx-auto p-4 space-y-4">
+      <div className="flex-1 overflow-y-auto">
+        <div className="container mx-auto p-4 space-y-4">
         <div className="flex gap-2 overflow-x-auto pb-2">
           {[1, 2, 3, 4, 5, 6, 7].map((day) => (
             <Button
@@ -406,6 +407,7 @@ export default function DietManagePage() {
             </Card>
           ))
         )}
+        </div>
       </div>
     </div>
   );

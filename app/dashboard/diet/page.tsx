@@ -16,9 +16,9 @@ import dietData from '@/app/data/diet.json';
 
 export default function DietPage() {
   return (
-    <div className='min-h-screen flex flex-col bg-background'>
+    <div className='h-screen flex flex-col bg-background overflow-hidden'>
       {/* Header */}
-      <header className='sticky top-0 z-10 bg-card border-b shadow-sm'>
+      <header className='shrink-0 bg-card border-b shadow-sm'>
         <div className='container mx-auto px-4 py-4'>
           <h1 className='text-2xl font-bold text-center flex items-center justify-center gap-2'>
             <Salad className='h-7 w-7 text-primary' />
