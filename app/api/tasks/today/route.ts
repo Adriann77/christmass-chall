@@ -22,7 +22,7 @@ export async function GET() {
     );
     currentDate.setHours(0, 0, 0, 0);
 
-    const dailyTask = await prisma.dailyTask.findUnique({
+    let dailyTask = await prisma.dailyTask.findUnique({
       where: {
         userId_date: {
           userId: session.userId,
@@ -31,21 +31,62 @@ export async function GET() {
       },
       include: {
         spendings: true,
+        taskCompletions: {
+          include: {
+            taskTemplate: true,
+          },
+        },
       },
     });
 
     if (!dailyTask) {
       // Create if doesn't exist
-      const newTask = await prisma.dailyTask.create({
+      dailyTask = await prisma.dailyTask.create({
         data: {
           userId: session.userId,
           date: currentDate,
         },
         include: {
           spendings: true,
+          taskCompletions: {
+            include: {
+              taskTemplate: true,
+            },
+          },
         },
       });
-      return NextResponse.json({ task: newTask });
+
+      // Get all active task templates for user
+      const taskTemplates = await prisma.taskTemplate.findMany({
+        where: {
+          userId: session.userId,
+          isActive: true,
+        },
+      });
+
+      // Create task completions for all active templates
+      for (const template of taskTemplates) {
+        await prisma.taskCompletion.create({
+          data: {
+            dailyTaskId: dailyTask.id,
+            taskTemplateId: template.id,
+            completed: false,
+          },
+        });
+      }
+
+      // Refetch with completions
+      dailyTask = await prisma.dailyTask.findUnique({
+        where: { id: dailyTask.id },
+        include: {
+          spendings: true,
+          taskCompletions: {
+            include: {
+              taskTemplate: true,
+            },
+          },
+        },
+      });
     }
 
     return NextResponse.json({ task: dailyTask });

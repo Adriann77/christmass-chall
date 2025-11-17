@@ -1,24 +1,40 @@
 # 🎄 Christmas Challenge App
 
-A beautiful, mobile-first web application for tracking daily challenges throughout December until Christmas (December 24th). Built with Next.js 16, Prisma, and styled with Tailwind CSS and shadcn/ui components.
+A beautiful, mobile-first web application for tracking daily challenges throughout December until Christmas (December 24th). Built with Next.js 15, Prisma, and styled with Tailwind CSS and shadcn/ui components.
 
 **App is fully translated to Polish (Polski)** 🇵🇱
 
 ## ✨ Features
 
-- 🔐 **Authentication System** - Secure login with two demo accounts
-- ✅ **Daily Task Tracking** - Track 5 daily tasks:
+- 🔐 **Authentication System** - Secure login with session-based authentication
+- ✅ **Daily Task Tracking** - Track 6 daily tasks:
   - 10,000 steps (10 000 kroków)
   - Training/stretching (Trening/Rozciąganie)
   - Clean diet (Zdrowa dieta)
   - Reading a book (Czytanie książki)
   - Learning for one hour (Nauka - 1 godzina)
+  - 2.5 liters of water (2.5 litra wody) ⭐ NEW
 - 💰 **Spending Tracker** - Log daily expenses with categories (Wydatki)
 - 📅 **Calendar Progress View** - Visual overview of completed vs incomplete days (Kalendarz)
-- 🎨 **Christmas-themed UI** - Festive red, green, and gold color scheme
+- 🍎 **7-Day Diet Plan** - Complete meal plans with macros and ingredients (Plan Diety)
+- 🎨 **Christmas-themed UI** - Festive color scheme with smooth animations
 - 📱 **Mobile-First Design** - Optimized for mobile devices with fixed bottom navigation
 - ✨ **Smooth Animations** - Powered by Framer Motion
 - 🌐 **Polish Language** - All UI text in Polish
+
+## 📚 Documentation
+
+### For Developers
+
+- 📖 **[DEVELOPER_GUIDE.md](./DEVELOPER_GUIDE.md)** - Start here! Onboarding guide for new developers
+- 🏗️ **[ARCHITECTURE.md](./ARCHITECTURE.md)** - Complete application architecture and tech stack
+- 🔄 **[PRISMA_MIGRATION_GUIDE.md](./PRISMA_MIGRATION_GUIDE.md)** - Step-by-step guide for database migrations
+- 📊 **[DATABASE_CHEATSHEET.md](./DATABASE_CHEATSHEET.md)** - Quick reference for database operations
+
+### Legacy Documentation
+
+- 📝 **[DATABASE_SETUP.md](./DATABASE_SETUP.md)** - Initial database setup (if exists)
+- 🚀 **[DEPLOYMENT.md](./DEPLOYMENT.md)** - Deployment instructions (if exists)
 
 ## 🚀 Getting Started
 

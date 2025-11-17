@@ -31,6 +31,38 @@ async function main() {
 
   console.log('✅ Seeded users:', { adrian, justyna });
 
+  // Create default task templates for both users
+  const defaultTasks = [
+    { name: '10 000 kroków', icon: 'TrendingUp', sortOrder: 1 },
+    { name: 'Trening/Rozciąganie', icon: 'Dumbbell', sortOrder: 2 },
+    { name: 'Zdrowa dieta', icon: 'Apple', sortOrder: 3 },
+    { name: 'Czytanie książki', icon: 'Book', sortOrder: 4 },
+    { name: 'Nauka (1 godzina)', icon: 'GraduationCap', sortOrder: 5 },
+    { name: '2.5 litra wody', icon: 'Droplet', sortOrder: 6 },
+  ];
+
+  for (const user of [adrian, justyna]) {
+    for (const task of defaultTasks) {
+      await prisma.taskTemplate.upsert({
+        where: {
+          userId_name: {
+            userId: user.id,
+            name: task.name,
+          },
+        },
+        update: {},
+        create: {
+          userId: user.id,
+          name: task.name,
+          icon: task.icon,
+          sortOrder: task.sortOrder,
+        },
+      });
+    }
+  }
+
+  console.log('✅ Seeded default task templates');
+
   // Initialize daily tasks for all days from today until December 24, 2025
   const today = new Date();
   const christmasDate = new Date(2025, 11, 24);

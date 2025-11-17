@@ -24,8 +24,23 @@ import {
   CheckSquare,
   Salad,
   Droplet,
+  Settings,
 } from 'lucide-react';
 import Link from 'next/link';
+
+interface TaskTemplate {
+  id: string;
+  name: string;
+  icon: string;
+  isActive: boolean;
+  sortOrder: number;
+}
+
+interface TaskCompletion {
+  id: string;
+  completed: boolean;
+  taskTemplate: TaskTemplate;
+}
 
 interface DailyTask {
   id: string;
@@ -37,19 +52,23 @@ interface DailyTask {
   learning: boolean;
   water: boolean;
   spendings: unknown[];
+  taskCompletions?: TaskCompletion[];
 }
 
-const tasks = [
-  { key: 'steps', label: '10 000 kroków', icon: TrendingUp },
-  { key: 'training', label: 'Trening/Rozciąganie', icon: Dumbbell },
-  { key: 'diet', label: 'Zdrowa dieta', icon: Apple },
-  { key: 'book', label: 'Czytanie książki', icon: Book },
-  { key: 'learning', label: 'Nauka (1 godzina)', icon: GraduationCap },
-  { key: 'water', label: '2.5 litra wody', icon: Droplet },
-];
+const ICON_MAP: Record<string, React.ElementType> = {
+  TrendingUp,
+  Dumbbell,
+  Apple,
+  Book,
+  GraduationCap,
+  Droplet,
+  CheckSquare,
+};
 
 export default function DashboardPage() {
   const [dailyTask, setDailyTask] = useState<DailyTask | null>(null);
+  const [taskTemplates, setTaskTemplates] = useState<TaskTemplate[]>([]);
+  const [user, setUser] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
 
@@ -61,6 +80,15 @@ export default function DashboardPage() {
       if (!data.user) {
         router.push('/login');
         return;
+      }
+
+      setUser(data.user);
+
+      // Fetch task templates
+      const templatesResponse = await fetch('/api/task-templates');
+      if (templatesResponse.ok) {
+        const templatesData = await templatesResponse.json();
+        setTaskTemplates(templatesData.filter((t: TaskTemplate) => t.isActive));
       }
 
       // Fetch today's task
@@ -78,31 +106,28 @@ export default function DashboardPage() {
     router.push('/login');
   };
 
-  const handleTaskToggle = async (taskKey: string) => {
+  const handleTaskToggle = async (completionId: string, currentValue: boolean) => {
     if (!dailyTask) return;
 
-    const newValue = !dailyTask[taskKey as keyof DailyTask];
-
-    // Optimistic update
-    setDailyTask({ ...dailyTask, [taskKey]: newValue });
-
     try {
-      const response = await fetch(`/api/tasks/${dailyTask.id}`, {
+      const response = await fetch(`/api/task-completions/${completionId}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ [taskKey]: newValue }),
+        body: JSON.stringify({ completed: !currentValue }),
       });
 
-      const data = await response.json();
-      setDailyTask(data.task);
+      if (response.ok) {
+        // Refetch task to get updated completions
+        const taskResponse = await fetch('/api/tasks/today');
+        const taskData = await taskResponse.json();
+        setDailyTask(taskData.task);
+      }
     } catch (error) {
       console.error('Failed to update task:', error);
-      // Revert on error
-      setDailyTask({ ...dailyTask, [taskKey]: !newValue });
     }
   };
 
-  if (loading) {
+  if (loading || !user) {
     return (
       <div className='min-h-screen flex items-center justify-center'>
         <motion.div
@@ -118,16 +143,25 @@ export default function DashboardPage() {
 
   const now = new Date();
   const currentDay = now.getDate();
-  const currentMonth = now.getMonth(); // 0-indexed (0 = January, 11 = December)
+  const currentMonth = now.getMonth();
 
-  // Calculate days until December 24, 2025
-  const christmasDate = new Date(2025, 11, 24); // December 24, 2025
+  // Calculate days since challenge start
+  const challengeStart = new Date(user.challengeStartDate);
+  challengeStart.setHours(0, 0, 0, 0);
   const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-  const daysUntilChristmas = Math.ceil(
-    (christmasDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24),
-  );
+  today.setHours(0, 0, 0, 0);
+  
+  const daysSinceStart = Math.floor(
+    (today.getTime() - challengeStart.getTime()) / (1000 * 60 * 60 * 24),
+  ) + 1; // +1 because day 1 is the start date
 
-  // Format current date
+  const challengeEndDate = new Date(challengeStart);
+  challengeEndDate.setDate(challengeStart.getDate() + 37); // 38 days total (day 1 to day 38)
+  
+  const daysRemaining = Math.max(0, Math.ceil(
+    (challengeEndDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24),
+  ));
+
   const monthNames = [
     'stycznia',
     'lutego',
@@ -144,21 +178,21 @@ export default function DashboardPage() {
   ];
   const currentDateStr = `${currentDay} ${monthNames[currentMonth]}`;
 
-  const completedTasks = dailyTask
-    ? tasks.filter((t) => dailyTask[t.key as keyof DailyTask] === true).length
-    : 0;
-  const totalTasks = tasks.length;
-  const progress = (completedTasks / totalTasks) * 100;
+  const completions = dailyTask?.taskCompletions || [];
+  const completedTasks = completions.filter((c) => c.completed).length;
+  const totalTasks = completions.length;
+  const progress = totalTasks > 0 ? (completedTasks / totalTasks) * 100 : 0;
 
   return (
     <div className='min-h-screen flex flex-col bg-background'>
       {/* Header */}
-      <header className='sticky top-0 z-10 flex justify-end px-4 py-2'>
-        <Button
-          variant='ghost'
-          size='icon'
-          onClick={handleLogout}
-        >
+      <header className='sticky top-0 z-10 flex justify-between items-center px-4 py-2'>
+        <Link href='/dashboard/settings/tasks'>
+          <Button variant='ghost' size='icon'>
+            <Settings className='h-5 w-5' />
+          </Button>
+        </Link>
+        <Button variant='ghost' size='icon' onClick={handleLogout}>
           <LogOut className='h-5 w-5' />
         </Button>
       </header>
@@ -178,15 +212,15 @@ export default function DashboardPage() {
                   {currentDateStr}
                 </CardTitle>
                 <CardDescription className='text-center text-secondary-foreground/80'>
-                  {daysUntilChristmas <= 0
-                    ? 'Wesołych Świąt! 🎉🎄'
-                    : `${daysUntilChristmas} ${
-                        daysUntilChristmas === 1
+                  {daysRemaining <= 0
+                    ? 'Wyzwanie ukończone! 🎉🎄'
+                    : `Dzień ${daysSinceStart} • ${daysRemaining} ${
+                        daysRemaining === 1
                           ? 'dzień'
-                          : daysUntilChristmas < 5
+                          : daysRemaining < 5
                           ? 'dni'
                           : 'dni'
-                      } do Świąt Bożego Narodzenia! 🎅`}
+                      } pozostało 💪`}
                 </CardDescription>
               </CardHeader>
             </Card>
@@ -226,50 +260,62 @@ export default function DashboardPage() {
           {/* Daily Tasks */}
           <div className='space-y-3'>
             <h2 className='text-xl font-bold px-1'>Dzisiejsze zadania</h2>
-            {tasks.map((task, index) => {
-              const Icon = task.icon;
-              const isCompleted =
-                dailyTask?.[task.key as keyof DailyTask] === true;
+            {completions.length === 0 ? (
+              <Card className='p-6 text-center'>
+                <p className='text-muted-foreground mb-4'>
+                  Nie masz jeszcze żadnych zadań
+                </p>
+                <Link href='/dashboard/settings/tasks'>
+                  <Button>Dodaj zadania</Button>
+                </Link>
+              </Card>
+            ) : (
+              completions.map((completion, index) => {
+                const Icon = ICON_MAP[completion.taskTemplate.icon] || CheckSquare;
+                const isCompleted = completion.completed;
 
-              return (
-                <motion.div
-                  key={task.key}
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: 0.2 + index * 0.1, duration: 0.5 }}
-                >
-                  <Card
-                    className={`cursor-pointer transition-all hover:shadow-lg ${
-                      isCompleted ? 'bg-accent border-primary' : ''
-                    }`}
-                    onClick={() => handleTaskToggle(task.key)}
+                return (
+                  <motion.div
+                    key={completion.id}
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.2 + index * 0.1, duration: 0.5 }}
                   >
-                    <CardContent className='flex items-center gap-4 p-4'>
-                      <Checkbox
-                        checked={isCompleted}
-                        onCheckedChange={() => handleTaskToggle(task.key)}
-                        className='h-6 w-6'
-                      />
-                      <Icon
-                        className={`h-6 w-6 ${
-                          isCompleted ? 'text-primary' : 'text-muted-foreground'
-                        }`}
-                      />
-                      <span
-                        className={`flex-1 font-medium ${
-                          isCompleted
-                            ? 'line-through text-muted-foreground'
-                            : ''
-                        }`}
-                      >
-                        {task.label}
-                      </span>
-                      {isCompleted && <span className='text-2xl'>✅</span>}
-                    </CardContent>
-                  </Card>
-                </motion.div>
-              );
-            })}
+                    <Card
+                      className={`cursor-pointer transition-all hover:shadow-lg ${
+                        isCompleted ? 'bg-accent border-primary' : ''
+                      }`}
+                      onClick={() => handleTaskToggle(completion.id, isCompleted)}
+                    >
+                      <CardContent className='flex items-center gap-4 p-4'>
+                        <Checkbox
+                          checked={isCompleted}
+                          onCheckedChange={() =>
+                            handleTaskToggle(completion.id, isCompleted)
+                          }
+                          className='h-6 w-6'
+                        />
+                        <Icon
+                          className={`h-6 w-6 ${
+                            isCompleted ? 'text-primary' : 'text-muted-foreground'
+                          }`}
+                        />
+                        <span
+                          className={`flex-1 font-medium ${
+                            isCompleted
+                              ? 'line-through text-muted-foreground'
+                              : ''
+                          }`}
+                        >
+                          {completion.taskTemplate.name}
+                        </span>
+                        {isCompleted && <span className='text-2xl'>✅</span>}
+                      </CardContent>
+                    </Card>
+                  </motion.div>
+                );
+              })
+            )}
           </div>
         </div>
       </main>

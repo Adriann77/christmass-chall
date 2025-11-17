@@ -55,14 +55,39 @@ export async function registerUser(
     // Hash the password
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // Create the user
+    // Create the user with challenge start date as today
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
     const user = await prisma.user.create({
       data: {
         username,
         password: hashedPassword,
         name,
+        challengeStartDate: today,
       },
     });
+
+    // Create default task templates for new user
+    const defaultTasks = [
+      { name: '10 000 kroków', icon: 'TrendingUp', sortOrder: 1 },
+      { name: 'Trening/Rozciąganie', icon: 'Dumbbell', sortOrder: 2 },
+      { name: 'Zdrowa dieta', icon: 'Apple', sortOrder: 3 },
+      { name: 'Czytanie książki', icon: 'Book', sortOrder: 4 },
+      { name: 'Nauka (1 godzina)', icon: 'GraduationCap', sortOrder: 5 },
+      { name: '2.5 litra wody', icon: 'Droplet', sortOrder: 6 },
+    ];
+
+    for (const task of defaultTasks) {
+      await prisma.taskTemplate.create({
+        data: {
+          userId: user.id,
+          name: task.name,
+          icon: task.icon,
+          sortOrder: task.sortOrder,
+        },
+      });
+    }
 
     return {
       success: true,
@@ -78,7 +103,7 @@ export async function registerUser(
   }
 }
 
-export async function getUserById(id: string): Promise<AuthUser | null> {
+export async function getUserById(id: string): Promise<any | null> {
   try {
     const user = await prisma.user.findUnique({
       where: { id },
@@ -86,6 +111,7 @@ export async function getUserById(id: string): Promise<AuthUser | null> {
         id: true,
         username: true,
         name: true,
+        challengeStartDate: true,
       },
     });
 

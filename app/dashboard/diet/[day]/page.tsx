@@ -56,12 +56,16 @@ export default function DayDetailPage() {
   const router = useRouter();
   const dayNumber = parseInt(params.day as string);
 
-  const dayData = dietData.find((d) => d.day === dayNumber) as DayData | undefined;
+  const dayData = dietData.find((d) => d.day === dayNumber) as
+    | DayData
+    | undefined;
 
   if (!dayData) {
     return (
       <div className='min-h-screen flex items-center justify-center'>
-        <p className='text-lg text-muted-foreground'>Nie znaleziono danych dla tego dnia</p>
+        <p className='text-lg text-muted-foreground'>
+          Nie znaleziono danych dla tego dnia
+        </p>
       </div>
     );
   }
@@ -114,25 +118,40 @@ export default function DayDetailPage() {
                     <div>
                       <p className='text-sm text-muted-foreground'>Kalorie</p>
                       <p className='text-2xl font-bold text-primary'>
-                        {dayData.total.kcal} <span className='text-sm'>kcal</span>
+                        {dayData.total.kcal}{' '}
+                        <span className='text-sm'>kcal</span>
                       </p>
                     </div>
                   </div>
                   <div className='space-y-2'>
                     <div>
-                      <p className='text-sm text-muted-foreground'>Makroskładniki</p>
+                      <p className='text-sm text-muted-foreground'>
+                        Makroskładniki
+                      </p>
                       <div className='space-y-1 mt-2'>
                         <div className='flex items-center justify-between text-sm'>
-                          <span className='font-medium text-blue-600'>Białko:</span>
-                          <span className='font-semibold'>{dayData.total.protein}g</span>
+                          <span className='font-medium text-blue-600'>
+                            Białko:
+                          </span>
+                          <span className='font-semibold'>
+                            {dayData.total.protein}g
+                          </span>
                         </div>
                         <div className='flex items-center justify-between text-sm'>
-                          <span className='font-medium text-yellow-600'>Tłuszcz:</span>
-                          <span className='font-semibold'>{dayData.total.fat}g</span>
+                          <span className='font-medium text-yellow-600'>
+                            Tłuszcz:
+                          </span>
+                          <span className='font-semibold'>
+                            {dayData.total.fat}g
+                          </span>
                         </div>
                         <div className='flex items-center justify-between text-sm'>
-                          <span className='font-medium text-green-600'>Węgle:</span>
-                          <span className='font-semibold'>{dayData.total.carbs}g</span>
+                          <span className='font-medium text-green-600'>
+                            Węgle:
+                          </span>
+                          <span className='font-semibold'>
+                            {dayData.total.carbs}g
+                          </span>
                         </div>
                       </div>
                     </div>
@@ -149,7 +168,11 @@ export default function DayDetailPage() {
               Posiłki
             </h2>
 
-            <Accordion type='single' collapsible className='space-y-3'>
+            <Accordion
+              type='single'
+              collapsible
+              className='space-y-3'
+            >
               {dayData.meals.map((meal, index) => (
                 <motion.div
                   key={index}
@@ -157,7 +180,10 @@ export default function DayDetailPage() {
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: 0.2 + index * 0.1, duration: 0.5 }}
                 >
-                  <AccordionItem value={`meal-${index}`} className='border-0'>
+                  <AccordionItem
+                    value={`meal-${index}`}
+                    className='border-0'
+                  >
                     <Card className='overflow-hidden'>
                       <AccordionTrigger className='hover:no-underline px-6 py-4'>
                         <div className='flex items-start justify-between w-full pr-4'>
@@ -166,7 +192,9 @@ export default function DayDetailPage() {
                               <Apple className='h-4 w-4 text-primary' />
                             </div>
                             <div className='text-left'>
-                              <h3 className='font-semibold text-base'>{meal.name}</h3>
+                              <h3 className='font-semibold text-base'>
+                                {meal.name}
+                              </h3>
                               <p className='text-sm text-muted-foreground mt-1'>
                                 {meal.kcal} kcal
                               </p>
@@ -178,30 +206,42 @@ export default function DayDetailPage() {
                         <div className='px-6 pb-4 space-y-4'>
                           {/* Meal Macros */}
                           <div className='bg-secondary/30 rounded-lg p-4'>
-                            <p className='text-sm font-semibold mb-3'>Wartości odżywcze</p>
+                            <p className='text-sm font-semibold mb-3'>
+                              Wartości odżywcze
+                            </p>
                             <div className='grid grid-cols-4 gap-2 text-center'>
                               <div>
-                                <p className='text-xs text-muted-foreground'>Kalorie</p>
+                                <p className='text-xs text-muted-foreground'>
+                                  Kalorie
+                                </p>
                                 <p className='font-bold text-sm'>{meal.kcal}</p>
                               </div>
                               <div>
                                 <p className='text-xs text-blue-600'>Białko</p>
-                                <p className='font-bold text-sm'>{meal.protein}g</p>
+                                <p className='font-bold text-sm'>
+                                  {meal.protein}g
+                                </p>
                               </div>
                               <div>
-                                <p className='text-xs text-yellow-600'>Tłuszcz</p>
+                                <p className='text-xs text-yellow-600'>
+                                  Tłuszcz
+                                </p>
                                 <p className='font-bold text-sm'>{meal.fat}g</p>
                               </div>
                               <div>
                                 <p className='text-xs text-green-600'>Węgle</p>
-                                <p className='font-bold text-sm'>{meal.carbs}g</p>
+                                <p className='font-bold text-sm'>
+                                  {meal.carbs}g
+                                </p>
                               </div>
                             </div>
                           </div>
 
                           {/* Ingredients */}
                           <div>
-                            <p className='text-sm font-semibold mb-3'>Składniki</p>
+                            <p className='text-sm font-semibold mb-3'>
+                              Składniki
+                            </p>
                             <div className='space-y-2'>
                               {meal.ingredients.map((ingredient, idx) => (
                                 <div

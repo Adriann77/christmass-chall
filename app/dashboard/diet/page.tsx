@@ -3,7 +3,15 @@
 import { motion } from 'framer-motion';
 import Link from 'next/link';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { CheckSquare, DollarSign, Salad, Calendar, ChevronRight, Flame, Apple } from 'lucide-react';
+import {
+  CheckSquare,
+  DollarSign,
+  Salad,
+  Calendar,
+  ChevronRight,
+  Flame,
+  Apple,
+} from 'lucide-react';
 import dietData from '@/app/data/diet.json';
 
 export default function DietPage() {
@@ -52,21 +60,36 @@ export default function DietPage() {
                       <div className='bg-secondary/50 rounded-lg p-3'>
                         <div className='flex items-center gap-2 mb-1'>
                           <Flame className='h-4 w-4 text-orange-500' />
-                          <span className='text-xs text-muted-foreground'>Kalorie</span>
+                          <span className='text-xs text-muted-foreground'>
+                            Kalorie
+                          </span>
                         </div>
-                        <p className='text-lg font-bold'>{day.total.kcal} kcal</p>
+                        <p className='text-lg font-bold'>
+                          {day.total.kcal} kcal
+                        </p>
                       </div>
                       <div className='bg-secondary/50 rounded-lg p-3'>
-                        <div className='text-xs text-muted-foreground mb-1'>Makroskładniki</div>
+                        <div className='text-xs text-muted-foreground mb-1'>
+                          Makroskładniki
+                        </div>
                         <div className='space-y-1 text-sm'>
                           <p>
-                            <span className='font-semibold text-blue-600'>B:</span> {day.total.protein}g
+                            <span className='font-semibold text-blue-600'>
+                              B:
+                            </span>{' '}
+                            {day.total.protein}g
                           </p>
                           <p>
-                            <span className='font-semibold text-yellow-600'>T:</span> {day.total.fat}g
+                            <span className='font-semibold text-yellow-600'>
+                              T:
+                            </span>{' '}
+                            {day.total.fat}g
                           </p>
                           <p>
-                            <span className='font-semibold text-green-600'>W:</span> {day.total.carbs}g
+                            <span className='font-semibold text-green-600'>
+                              W:
+                            </span>{' '}
+                            {day.total.carbs}g
                           </p>
                         </div>
                       </div>

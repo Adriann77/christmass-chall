@@ -14,7 +14,14 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog';
 import { motion } from 'framer-motion';
-import { Calendar, CheckSquare, DollarSign, LogOut, Plus, Salad } from 'lucide-react';
+import {
+  Calendar,
+  CheckSquare,
+  DollarSign,
+  LogOut,
+  Plus,
+  Salad,
+} from 'lucide-react';
 import Link from 'next/link';
 
 interface Spending {
