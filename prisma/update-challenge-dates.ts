@@ -13,7 +13,11 @@ async function main() {
     },
   });
 
-  console.log(`✅ Updated ${result.count} users with challenge start date: ${challengeStartDate.toLocaleDateString()}`);
+  console.log(
+    `✅ Updated ${
+      result.count
+    } users with challenge start date: ${challengeStartDate.toLocaleDateString()}`,
+  );
 }
 
 main()

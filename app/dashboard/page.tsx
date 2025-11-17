@@ -132,7 +132,10 @@ export default function DashboardPage() {
     router.push('/login');
   };
 
-  const handleTaskToggle = async (completionId: string, currentValue: boolean) => {
+  const handleTaskToggle = async (
+    completionId: string,
+    currentValue: boolean,
+  ) => {
     if (!dailyTask) return;
 
     try {
@@ -176,17 +179,21 @@ export default function DashboardPage() {
   challengeStart.setHours(0, 0, 0, 0);
   const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
   today.setHours(0, 0, 0, 0);
-  
-  const daysSinceStart = Math.floor(
-    (today.getTime() - challengeStart.getTime()) / (1000 * 60 * 60 * 24),
-  ) + 1; // +1 because day 1 is the start date
+
+  const daysSinceStart =
+    Math.floor(
+      (today.getTime() - challengeStart.getTime()) / (1000 * 60 * 60 * 24),
+    ) + 1; // +1 because day 1 is the start date
 
   const challengeEndDate = new Date(challengeStart);
   challengeEndDate.setDate(challengeStart.getDate() + 37); // 38 days total (day 1 to day 38)
-  
-  const daysRemaining = Math.max(0, Math.ceil(
-    (challengeEndDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24),
-  ));
+
+  const daysRemaining = Math.max(
+    0,
+    Math.ceil(
+      (challengeEndDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24),
+    ),
+  );
 
   const monthNames = [
     'stycznia',
@@ -214,11 +221,18 @@ export default function DashboardPage() {
       {/* Header */}
       <header className='shrink-0 flex justify-between items-center px-4 py-2 border-b bg-background'>
         <Link href='/dashboard/settings/tasks'>
-          <Button variant='ghost' size='icon'>
+          <Button
+            variant='ghost'
+            size='icon'
+          >
             <Settings className='h-5 w-5' />
           </Button>
         </Link>
-        <Button variant='ghost' size='icon' onClick={handleLogout}>
+        <Button
+          variant='ghost'
+          size='icon'
+          onClick={handleLogout}
+        >
           <LogOut className='h-5 w-5' />
         </Button>
       </header>
@@ -297,7 +311,8 @@ export default function DashboardPage() {
               </Card>
             ) : (
               completions.map((completion, index) => {
-                const Icon = ICON_MAP[completion.taskTemplate.icon] || CheckSquare;
+                const Icon =
+                  ICON_MAP[completion.taskTemplate.icon] || CheckSquare;
                 const isCompleted = completion.completed;
 
                 return (
@@ -311,7 +326,9 @@ export default function DashboardPage() {
                       className={`cursor-pointer transition-all hover:shadow-lg ${
                         isCompleted ? 'bg-accent border-primary' : ''
                       }`}
-                      onClick={() => handleTaskToggle(completion.id, isCompleted)}
+                      onClick={() =>
+                        handleTaskToggle(completion.id, isCompleted)
+                      }
                     >
                       <CardContent className='flex items-center gap-4 p-4'>
                         <Checkbox
@@ -323,7 +340,9 @@ export default function DashboardPage() {
                         />
                         <Icon
                           className={`h-6 w-6 ${
-                            isCompleted ? 'text-primary' : 'text-muted-foreground'
+                            isCompleted
+                              ? 'text-primary'
+                              : 'text-muted-foreground'
                           }`}
                         />
                         <span

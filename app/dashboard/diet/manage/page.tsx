@@ -153,54 +153,60 @@ export default function DietManagePage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className='min-h-screen flex items-center justify-center'>
         <p>Ładowanie...</p>
       </div>
     );
   }
 
   return (
-    <div className="h-screen flex flex-col bg-gradient-to-br from-red-50 via-green-50 to-red-50 overflow-hidden">
-      <div className="shrink-0 bg-gradient-to-r from-red-600 to-green-600 text-white p-4 shadow-lg">
-        <div className="container mx-auto flex items-center justify-between">
-          <div className="flex items-center gap-3">
+    <div className='h-screen flex flex-col bg-gradient-to-br from-red-50 via-green-50 to-red-50 overflow-hidden'>
+      <div className='shrink-0 bg-gradient-to-r from-red-600 to-green-600 text-white p-4 shadow-lg'>
+        <div className='container mx-auto flex items-center justify-between'>
+          <div className='flex items-center gap-3'>
             <Button
-              variant="ghost"
-              size="icon"
+              variant='ghost'
+              size='icon'
               onClick={() => router.push('/dashboard/diet')}
-              className="text-white hover:bg-white/20"
+              className='text-white hover:bg-white/20'
             >
-              <ArrowLeft className="h-5 w-5" />
+              <ArrowLeft className='h-5 w-5' />
             </Button>
-            <h1 className="text-xl font-bold">Zarządzaj Dietą</h1>
+            <h1 className='text-xl font-bold'>Zarządzaj Dietą</h1>
           </div>
 
-          <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+          <Dialog
+            open={dialogOpen}
+            onOpenChange={setDialogOpen}
+          >
             <DialogTrigger asChild>
               <Button
-                variant="ghost"
-                size="icon"
-                className="text-white hover:bg-white/20"
+                variant='ghost'
+                size='icon'
+                className='text-white hover:bg-white/20'
                 onClick={resetForm}
               >
-                <Plus className="h-5 w-5" />
+                <Plus className='h-5 w-5' />
               </Button>
             </DialogTrigger>
-            <DialogContent className="max-h-[90vh] overflow-y-auto">
+            <DialogContent className='max-h-[90vh] overflow-y-auto'>
               <DialogHeader>
                 <DialogTitle>
                   {editingMeal ? 'Edytuj Posiłek' : 'Nowy Posiłek'}
                 </DialogTitle>
               </DialogHeader>
-              <form onSubmit={handleSubmit} className="space-y-4">
-                <div className="grid grid-cols-2 gap-4">
+              <form
+                onSubmit={handleSubmit}
+                className='space-y-4'
+              >
+                <div className='grid grid-cols-2 gap-4'>
                   <div>
-                    <Label htmlFor="day">Dzień (1-7)</Label>
+                    <Label htmlFor='day'>Dzień (1-7)</Label>
                     <Input
-                      id="day"
-                      type="number"
-                      min="1"
-                      max="7"
+                      id='day'
+                      type='number'
+                      min='1'
+                      max='7'
                       value={formData.day}
                       onChange={(e) =>
                         setFormData({
@@ -212,14 +218,14 @@ export default function DietManagePage() {
                     />
                   </div>
                   <div>
-                    <Label htmlFor="mealType">Typ posiłku</Label>
+                    <Label htmlFor='mealType'>Typ posiłku</Label>
                     <select
-                      id="mealType"
+                      id='mealType'
                       value={formData.mealType}
                       onChange={(e) =>
                         setFormData({ ...formData, mealType: e.target.value })
                       }
-                      className="w-full border rounded-md p-2"
+                      className='w-full border rounded-md p-2'
                     >
                       <option>Śniadanie</option>
                       <option>Obiad</option>
@@ -229,24 +235,24 @@ export default function DietManagePage() {
                 </div>
 
                 <div>
-                  <Label htmlFor="name">Nazwa</Label>
+                  <Label htmlFor='name'>Nazwa</Label>
                   <Input
-                    id="name"
+                    id='name'
                     value={formData.name}
                     onChange={(e) =>
                       setFormData({ ...formData, name: e.target.value })
                     }
-                    placeholder="Nazwa posiłku"
+                    placeholder='Nazwa posiłku'
                     required
                   />
                 </div>
 
-                <div className="grid grid-cols-2 gap-4">
+                <div className='grid grid-cols-2 gap-4'>
                   <div>
-                    <Label htmlFor="kcal">Kalorie</Label>
+                    <Label htmlFor='kcal'>Kalorie</Label>
                     <Input
-                      id="kcal"
-                      type="number"
+                      id='kcal'
+                      type='number'
                       value={formData.kcal}
                       onChange={(e) =>
                         setFormData({
@@ -257,10 +263,10 @@ export default function DietManagePage() {
                     />
                   </div>
                   <div>
-                    <Label htmlFor="protein">Białko (g)</Label>
+                    <Label htmlFor='protein'>Białko (g)</Label>
                     <Input
-                      id="protein"
-                      type="number"
+                      id='protein'
+                      type='number'
                       value={formData.protein}
                       onChange={(e) =>
                         setFormData({
@@ -271,10 +277,10 @@ export default function DietManagePage() {
                     />
                   </div>
                   <div>
-                    <Label htmlFor="fat">Tłuszcze (g)</Label>
+                    <Label htmlFor='fat'>Tłuszcze (g)</Label>
                     <Input
-                      id="fat"
-                      type="number"
+                      id='fat'
+                      type='number'
                       value={formData.fat}
                       onChange={(e) =>
                         setFormData({
@@ -285,10 +291,10 @@ export default function DietManagePage() {
                     />
                   </div>
                   <div>
-                    <Label htmlFor="carbs">Węglowodany (g)</Label>
+                    <Label htmlFor='carbs'>Węglowodany (g)</Label>
                     <Input
-                      id="carbs"
-                      type="number"
+                      id='carbs'
+                      type='number'
                       value={formData.carbs}
                       onChange={(e) =>
                         setFormData({
@@ -301,23 +307,30 @@ export default function DietManagePage() {
                 </div>
 
                 <div>
-                  <Label htmlFor="ingredients">Składniki (JSON)</Label>
+                  <Label htmlFor='ingredients'>Składniki (JSON)</Label>
                   <textarea
-                    id="ingredients"
+                    id='ingredients'
                     value={formData.ingredients}
                     onChange={(e) =>
                       setFormData({ ...formData, ingredients: e.target.value })
                     }
-                    className="w-full border rounded-md p-2 min-h-[100px]"
+                    className='w-full border rounded-md p-2 min-h-[100px]'
                     placeholder='[{"name": "Jajka", "kcal": 150}]'
                   />
                 </div>
 
-                <div className="flex gap-2">
-                  <Button type="submit" className="flex-1">
+                <div className='flex gap-2'>
+                  <Button
+                    type='submit'
+                    className='flex-1'
+                  >
                     {editingMeal ? 'Zapisz' : 'Dodaj'}
                   </Button>
-                  <Button type="button" variant="outline" onClick={resetForm}>
+                  <Button
+                    type='button'
+                    variant='outline'
+                    onClick={resetForm}
+                  >
                     Anuluj
                   </Button>
                 </div>
@@ -327,86 +340,89 @@ export default function DietManagePage() {
         </div>
       </div>
 
-      <div className="flex-1 overflow-y-auto">
-        <div className="container mx-auto p-4 space-y-4">
-        <div className="flex gap-2 overflow-x-auto pb-2">
-          {[1, 2, 3, 4, 5, 6, 7].map((day) => (
-            <Button
-              key={day}
-              variant={selectedDay === day ? 'default' : 'outline'}
-              onClick={() => setSelectedDay(day)}
-            >
-              Dzień {day}
-            </Button>
-          ))}
-        </div>
+      <div className='flex-1 overflow-y-auto'>
+        <div className='container mx-auto p-4 space-y-4'>
+          <div className='flex gap-2 overflow-x-auto pb-2'>
+            {[1, 2, 3, 4, 5, 6, 7].map((day) => (
+              <Button
+                key={day}
+                variant={selectedDay === day ? 'default' : 'outline'}
+                onClick={() => setSelectedDay(day)}
+              >
+                Dzień {day}
+              </Button>
+            ))}
+          </div>
 
-        {(mealsByDay[selectedDay] || []).length === 0 ? (
-          <Card className="p-8 text-center">
-            <p className="text-gray-500 mb-4">
-              Brak posiłków dla dnia {selectedDay}
-            </p>
-            <Button onClick={() => setDialogOpen(true)}>
-              <Plus className="h-4 w-4 mr-2" />
-              Dodaj posiłek
-            </Button>
-          </Card>
-        ) : (
-          (mealsByDay[selectedDay] || []).map((meal) => (
-            <Card key={meal.id} className="p-4">
-              <div className="flex items-start justify-between">
-                <div className="flex-1">
-                  <div className="flex items-center gap-2 mb-2">
-                    <span className="text-sm font-semibold text-red-600">
-                      {meal.mealType}
-                    </span>
-                  </div>
-                  <h3 className="font-bold text-lg mb-2">{meal.name}</h3>
-                  <div className="grid grid-cols-4 gap-2 text-sm">
-                    <div>
-                      <span className="text-gray-500">Kcal:</span>
-                      <br />
-                      <span className="font-semibold">{meal.kcal}</span>
-                    </div>
-                    <div>
-                      <span className="text-gray-500">Białko:</span>
-                      <br />
-                      <span className="font-semibold">{meal.protein}g</span>
-                    </div>
-                    <div>
-                      <span className="text-gray-500">Tłuszcz:</span>
-                      <br />
-                      <span className="font-semibold">{meal.fat}g</span>
-                    </div>
-                    <div>
-                      <span className="text-gray-500">Węgle:</span>
-                      <br />
-                      <span className="font-semibold">{meal.carbs}g</span>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="flex gap-2">
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={() => handleEdit(meal)}
-                  >
-                    <Pencil className="h-4 w-4" />
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={() => handleDelete(meal.id)}
-                    className="text-red-600 hover:text-red-700 hover:bg-red-50"
-                  >
-                    <Trash2 className="h-4 w-4" />
-                  </Button>
-                </div>
-              </div>
+          {(mealsByDay[selectedDay] || []).length === 0 ? (
+            <Card className='p-8 text-center'>
+              <p className='text-gray-500 mb-4'>
+                Brak posiłków dla dnia {selectedDay}
+              </p>
+              <Button onClick={() => setDialogOpen(true)}>
+                <Plus className='h-4 w-4 mr-2' />
+                Dodaj posiłek
+              </Button>
             </Card>
-          ))
-        )}
+          ) : (
+            (mealsByDay[selectedDay] || []).map((meal) => (
+              <Card
+                key={meal.id}
+                className='p-4'
+              >
+                <div className='flex items-start justify-between'>
+                  <div className='flex-1'>
+                    <div className='flex items-center gap-2 mb-2'>
+                      <span className='text-sm font-semibold text-red-600'>
+                        {meal.mealType}
+                      </span>
+                    </div>
+                    <h3 className='font-bold text-lg mb-2'>{meal.name}</h3>
+                    <div className='grid grid-cols-4 gap-2 text-sm'>
+                      <div>
+                        <span className='text-gray-500'>Kcal:</span>
+                        <br />
+                        <span className='font-semibold'>{meal.kcal}</span>
+                      </div>
+                      <div>
+                        <span className='text-gray-500'>Białko:</span>
+                        <br />
+                        <span className='font-semibold'>{meal.protein}g</span>
+                      </div>
+                      <div>
+                        <span className='text-gray-500'>Tłuszcz:</span>
+                        <br />
+                        <span className='font-semibold'>{meal.fat}g</span>
+                      </div>
+                      <div>
+                        <span className='text-gray-500'>Węgle:</span>
+                        <br />
+                        <span className='font-semibold'>{meal.carbs}g</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className='flex gap-2'>
+                    <Button
+                      variant='ghost'
+                      size='icon'
+                      onClick={() => handleEdit(meal)}
+                    >
+                      <Pencil className='h-4 w-4' />
+                    </Button>
+                    <Button
+                      variant='ghost'
+                      size='icon'
+                      onClick={() => handleDelete(meal.id)}
+                      className='text-red-600 hover:text-red-700 hover:bg-red-50'
+                    >
+                      <Trash2 className='h-4 w-4' />
+                    </Button>
+                  </div>
+                </div>
+              </Card>
+            ))
+          )}
         </div>
       </div>
     </div>

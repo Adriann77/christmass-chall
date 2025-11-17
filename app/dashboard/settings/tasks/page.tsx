@@ -184,38 +184,41 @@ export default function TaskTemplatesPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className='min-h-screen flex items-center justify-center'>
         <p>Ładowanie...</p>
       </div>
     );
   }
 
   return (
-    <div className="h-screen flex flex-col bg-gradient-to-br from-red-50 via-green-50 to-red-50 overflow-hidden">
+    <div className='h-screen flex flex-col bg-gradient-to-br from-red-50 via-green-50 to-red-50 overflow-hidden'>
       {/* Header */}
-      <div className="shrink-0 bg-gradient-to-r from-red-600 to-green-600 text-white p-4 shadow-lg">
-        <div className="container mx-auto flex items-center justify-between">
-          <div className="flex items-center gap-3">
+      <div className='shrink-0 bg-gradient-to-r from-red-600 to-green-600 text-white p-4 shadow-lg'>
+        <div className='container mx-auto flex items-center justify-between'>
+          <div className='flex items-center gap-3'>
             <Button
-              variant="ghost"
-              size="icon"
+              variant='ghost'
+              size='icon'
               onClick={() => router.push('/dashboard')}
-              className="text-white hover:bg-white/20"
+              className='text-white hover:bg-white/20'
             >
-              <ArrowLeft className="h-5 w-5" />
+              <ArrowLeft className='h-5 w-5' />
             </Button>
-            <h1 className="text-xl font-bold">Zarządzaj Zadaniami</h1>
+            <h1 className='text-xl font-bold'>Zarządzaj Zadaniami</h1>
           </div>
 
-          <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+          <Dialog
+            open={dialogOpen}
+            onOpenChange={setDialogOpen}
+          >
             <DialogTrigger asChild>
               <Button
-                variant="ghost"
-                size="icon"
-                className="text-white hover:bg-white/20"
+                variant='ghost'
+                size='icon'
+                className='text-white hover:bg-white/20'
                 onClick={resetForm}
               >
-                <Plus className="h-5 w-5" />
+                <Plus className='h-5 w-5' />
               </Button>
             </DialogTrigger>
             <DialogContent>
@@ -224,29 +227,32 @@ export default function TaskTemplatesPage() {
                   {editingTemplate ? 'Edytuj Zadanie' : 'Nowe Zadanie'}
                 </DialogTitle>
               </DialogHeader>
-              <form onSubmit={handleSubmit} className="space-y-4">
+              <form
+                onSubmit={handleSubmit}
+                className='space-y-4'
+              >
                 <div>
-                  <Label htmlFor="name">Nazwa</Label>
+                  <Label htmlFor='name'>Nazwa</Label>
                   <Input
-                    id="name"
+                    id='name'
                     value={formData.name}
                     onChange={(e) =>
                       setFormData({ ...formData, name: e.target.value })
                     }
-                    placeholder="Nazwa zadania"
+                    placeholder='Nazwa zadania'
                     required
                   />
                 </div>
 
                 <div>
                   <Label>Ikona</Label>
-                  <div className="grid grid-cols-5 gap-2 mt-2 max-h-60 overflow-y-auto">
+                  <div className='grid grid-cols-5 gap-2 mt-2 max-h-60 overflow-y-auto'>
                     {ICON_OPTIONS.map((option) => {
                       const Icon = option.Icon;
                       return (
                         <button
                           key={option.value}
-                          type="button"
+                          type='button'
                           onClick={() =>
                             setFormData({ ...formData, icon: option.value })
                           }
@@ -256,32 +262,35 @@ export default function TaskTemplatesPage() {
                               : 'border-gray-200 hover:border-gray-300'
                           }`}
                         >
-                          <Icon className="h-5 w-5" />
-                          <span className="text-xs">{option.label}</span>
+                          <Icon className='h-5 w-5' />
+                          <span className='text-xs'>{option.label}</span>
                         </button>
                       );
                     })}
                   </div>
                 </div>
 
-                <div className="flex items-center gap-2">
+                <div className='flex items-center gap-2'>
                   <Checkbox
-                    id="isActive"
+                    id='isActive'
                     checked={formData.isActive}
                     onCheckedChange={(checked) =>
                       setFormData({ ...formData, isActive: !!checked })
                     }
                   />
-                  <Label htmlFor="isActive">Aktywne</Label>
+                  <Label htmlFor='isActive'>Aktywne</Label>
                 </div>
 
-                <div className="flex gap-2">
-                  <Button type="submit" className="flex-1">
+                <div className='flex gap-2'>
+                  <Button
+                    type='submit'
+                    className='flex-1'
+                  >
                     {editingTemplate ? 'Zapisz' : 'Dodaj'}
                   </Button>
                   <Button
-                    type="button"
-                    variant="outline"
+                    type='button'
+                    variant='outline'
                     onClick={resetForm}
                   >
                     Anuluj
@@ -294,65 +303,68 @@ export default function TaskTemplatesPage() {
       </div>
 
       {/* Content */}
-      <div className="flex-1 overflow-y-auto">
-        <div className="container mx-auto p-4 space-y-4">
-        {templates.length === 0 ? (
-          <Card className="p-8 text-center">
-            <p className="text-gray-500 mb-4">
-              Nie masz jeszcze żadnych zadań
-            </p>
-            <Button onClick={() => setDialogOpen(true)}>
-              <Plus className="h-4 w-4 mr-2" />
-              Dodaj pierwsze zadanie
-            </Button>
-          </Card>
-        ) : (
-          templates.map((template) => {
-            const Icon = getIconComponent(template.icon);
-            return (
-              <Card key={template.id} className="p-4">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <div
-                      className={`p-2 rounded-full ${
-                        template.isActive
-                          ? 'bg-red-100 text-red-600'
-                          : 'bg-gray-100 text-gray-400'
-                      }`}
-                    >
-                      <Icon className="h-5 w-5" />
+      <div className='flex-1 overflow-y-auto'>
+        <div className='container mx-auto p-4 space-y-4'>
+          {templates.length === 0 ? (
+            <Card className='p-8 text-center'>
+              <p className='text-gray-500 mb-4'>
+                Nie masz jeszcze żadnych zadań
+              </p>
+              <Button onClick={() => setDialogOpen(true)}>
+                <Plus className='h-4 w-4 mr-2' />
+                Dodaj pierwsze zadanie
+              </Button>
+            </Card>
+          ) : (
+            templates.map((template) => {
+              const Icon = getIconComponent(template.icon);
+              return (
+                <Card
+                  key={template.id}
+                  className='p-4'
+                >
+                  <div className='flex items-center justify-between'>
+                    <div className='flex items-center gap-3'>
+                      <div
+                        className={`p-2 rounded-full ${
+                          template.isActive
+                            ? 'bg-red-100 text-red-600'
+                            : 'bg-gray-100 text-gray-400'
+                        }`}
+                      >
+                        <Icon className='h-5 w-5' />
+                      </div>
+                      <div>
+                        <h3 className='font-semibold'>{template.name}</h3>
+                        <p className='text-sm text-gray-500'>
+                          Kolejność: {template.sortOrder} •{' '}
+                          {template.isActive ? 'Aktywne' : 'Nieaktywne'}
+                        </p>
+                      </div>
                     </div>
-                    <div>
-                      <h3 className="font-semibold">{template.name}</h3>
-                      <p className="text-sm text-gray-500">
-                        Kolejność: {template.sortOrder} •{' '}
-                        {template.isActive ? 'Aktywne' : 'Nieaktywne'}
-                      </p>
-                    </div>
-                  </div>
 
-                  <div className="flex gap-2">
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => handleEdit(template)}
-                    >
-                      <Pencil className="h-4 w-4" />
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => handleDelete(template.id)}
-                      className="text-red-600 hover:text-red-700 hover:bg-red-50"
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
+                    <div className='flex gap-2'>
+                      <Button
+                        variant='ghost'
+                        size='icon'
+                        onClick={() => handleEdit(template)}
+                      >
+                        <Pencil className='h-4 w-4' />
+                      </Button>
+                      <Button
+                        variant='ghost'
+                        size='icon'
+                        onClick={() => handleDelete(template.id)}
+                        className='text-red-600 hover:text-red-700 hover:bg-red-50'
+                      >
+                        <Trash2 className='h-4 w-4' />
+                      </Button>
+                    </div>
                   </div>
-                </div>
-              </Card>
-            );
-          })
-        )}
+                </Card>
+              );
+            })
+          )}
         </div>
       </div>
     </div>

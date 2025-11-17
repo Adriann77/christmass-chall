@@ -21,7 +21,7 @@ async function main() {
 
     if (existingTemplates.length === 0) {
       console.log(`Creating default tasks for user: ${user.username}`);
-      
+
       for (const task of defaultTasks) {
         await prisma.taskTemplate.create({
           data: {
@@ -33,7 +33,9 @@ async function main() {
         });
       }
     } else {
-      console.log(`User ${user.username} already has ${existingTemplates.length} task templates`);
+      console.log(
+        `User ${user.username} already has ${existingTemplates.length} task templates`,
+      );
     }
   }
 

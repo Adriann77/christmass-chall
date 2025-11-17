@@ -20,6 +20,25 @@ import {
   ChevronLeft,
   ChevronRight,
   Salad,
+  TrendingUp,
+  Dumbbell,
+  Apple,
+  Book,
+  GraduationCap,
+  Droplet,
+  Heart,
+  Utensils,
+  Coffee,
+  Moon,
+  Sun,
+  Zap,
+  Target,
+  Award,
+  Smile,
+  Music,
+  Camera,
+  Pill,
+  Bike,
 } from 'lucide-react';
 import Link from 'next/link';
 
@@ -31,6 +50,20 @@ interface Spending {
   createdAt: string;
 }
 
+interface TaskTemplate {
+  id: string;
+  name: string;
+  icon: string;
+  isActive: boolean;
+  sortOrder: number;
+}
+
+interface TaskCompletion {
+  id: string;
+  completed: boolean;
+  taskTemplate: TaskTemplate;
+}
+
 interface DailyTask {
   id: string;
   date: string;
@@ -39,8 +72,33 @@ interface DailyTask {
   diet: boolean;
   book: boolean;
   learning: boolean;
+  water: boolean;
   spendings: Spending[];
+  taskCompletions?: TaskCompletion[];
 }
+
+const ICON_MAP: Record<string, React.ElementType> = {
+  TrendingUp,
+  Dumbbell,
+  Apple,
+  Book,
+  GraduationCap,
+  Droplet,
+  CheckSquare,
+  Heart,
+  Utensils,
+  Coffee,
+  Moon,
+  Sun,
+  Zap,
+  Target,
+  Award,
+  Smile,
+  Music,
+  Camera,
+  Pill,
+  Bike,
+};
 
 export default function CalendarPage() {
   const [tasks, setTasks] = useState<DailyTask[]>([]);
@@ -130,7 +188,9 @@ export default function CalendarPage() {
         diet: false,
         book: false,
         learning: false,
+        water: false,
         spendings: [],
+        taskCompletions: [],
       },
     );
   };
@@ -166,17 +226,6 @@ export default function CalendarPage() {
     'Grudzień',
   ];
 
-  const taskLabels: Record<
-    keyof Omit<DailyTask, 'id' | 'date' | 'spendings'>,
-    string
-  > = {
-    steps: 'Kroki',
-    training: 'Trening',
-    diet: 'Dieta',
-    book: 'Książka',
-    learning: 'Nauka',
-  };
-
   if (loading) {
     return (
       <div className='min-h-screen flex items-center justify-center'>
@@ -192,18 +241,14 @@ export default function CalendarPage() {
   }
 
   const getTaskCompletion = (task: DailyTask) => {
-    const completed = [
-      task.steps,
-      task.training,
-      task.diet,
-      task.book,
-      task.learning,
-    ].filter(Boolean).length;
-    return { completed, total: 5 };
+    const completions = task.taskCompletions || [];
+    const completed = completions.filter((c) => c.completed).length;
+    return { completed, total: completions.length };
   };
 
   const getDayStatus = (task: DailyTask) => {
     const { completed, total } = getTaskCompletion(task);
+    if (total === 0) return 'incomplete';
     if (completed === total) return 'perfect';
     if (completed >= total * 0.6) return 'good';
     if (completed > 0) return 'partial';
@@ -430,17 +475,17 @@ export default function CalendarPage() {
               <div className='flex items-center gap-2'>
                 <span className='text-2xl'>🌟</span>
                 <span className='text-sm'>
-                  Perfekcyjne - Wszystkie 5 zadań ukończonych
+                  Perfekcyjne - Wszystkie zadania ukończone
                 </span>
               </div>
               <div className='flex items-center gap-2'>
                 <span className='text-2xl'>✅</span>
-                <span className='text-sm'>Dobre - 3-4 zadania ukończone</span>
+                <span className='text-sm'>Dobre - 60%+ zadań ukończonych</span>
               </div>
               <div className='flex items-center gap-2'>
                 <span className='text-2xl'>⚠️</span>
                 <span className='text-sm'>
-                  Częściowe - 1-2 zadania ukończone
+                  Częściowe - Niektóre zadania ukończone
                 </span>
               </div>
               <div className='flex items-center gap-2'>
@@ -481,44 +526,66 @@ export default function CalendarPage() {
                   Zadania
                 </h3>
                 <div className='space-y-2'>
-                  {Object.entries(taskLabels).map(([key, label]) => {
-                    const isCompleted =
-                      selectedTask[key as keyof typeof taskLabels];
-                    return (
-                      <div
-                        key={key}
-                        className={`flex items-center gap-3 p-3 rounded-lg border ${
-                          isCompleted
-                            ? 'bg-secondary/20 border-secondary'
-                            : 'bg-muted/20 border-muted'
-                        }`}
-                      >
+                  {selectedTask.taskCompletions &&
+                  selectedTask.taskCompletions.length > 0 ? (
+                    selectedTask.taskCompletions.map((completion) => {
+                      const Icon =
+                        ICON_MAP[completion.taskTemplate.icon] || CheckSquare;
+                      const isCompleted = completion.completed;
+                      return (
                         <div
-                          className={`w-6 h-6 rounded-full flex items-center justify-center ${
+                          key={completion.id}
+                          className={`flex items-center gap-3 p-3 rounded-lg border ${
                             isCompleted
-                              ? 'bg-secondary text-secondary-foreground'
-                              : 'bg-muted text-muted-foreground'
+                              ? 'bg-secondary/20 border-secondary'
+                              : 'bg-muted/20 border-muted'
                           }`}
                         >
-                          {isCompleted ? '✓' : '○'}
+                          <div
+                            className={`w-6 h-6 rounded-full flex items-center justify-center ${
+                              isCompleted
+                                ? 'bg-secondary text-secondary-foreground'
+                                : 'bg-muted text-muted-foreground'
+                            }`}
+                          >
+                            {isCompleted ? '✓' : '○'}
+                          </div>
+                          <Icon
+                            className={`h-5 w-5 ${
+                              isCompleted
+                                ? 'text-secondary'
+                                : 'text-muted-foreground'
+                            }`}
+                          />
+                          <span className='font-medium'>
+                            {completion.taskTemplate.name}
+                          </span>
                         </div>
-                        <span className='font-medium'>{label}</span>
-                      </div>
-                    );
-                  })}
+                      );
+                    })
+                  ) : (
+                    <div className='p-8 text-center rounded-lg border-2 border-dashed bg-muted/20'>
+                      <CheckSquare className='h-12 w-12 mx-auto mb-2 text-muted-foreground' />
+                      <p className='text-muted-foreground'>
+                        Brak zadań w tym dniu
+                      </p>
+                    </div>
+                  )}
                 </div>
 
-                <div className='mt-4 p-3 rounded-lg bg-accent/10 border border-accent'>
-                  <p className='text-sm font-medium'>
-                    Ukończono:{' '}
-                    {
-                      Object.keys(taskLabels).filter(
-                        (key) => selectedTask[key as keyof typeof taskLabels],
-                      ).length
-                    }{' '}
-                    / {Object.keys(taskLabels).length} zadań
-                  </p>
-                </div>
+                {selectedTask.taskCompletions &&
+                  selectedTask.taskCompletions.length > 0 && (
+                    <div className='mt-4 p-3 rounded-lg bg-accent/10 border border-accent'>
+                      <p className='text-sm font-medium'>
+                        Ukończono:{' '}
+                        {
+                          selectedTask.taskCompletions.filter((c) => c.completed)
+                            .length
+                        }{' '}
+                        / {selectedTask.taskCompletions.length} zadań
+                      </p>
+                    </div>
+                  )}
               </div>
 
               {/* Spendings Section */}

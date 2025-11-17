@@ -40,6 +40,16 @@ export async function GET(request: Request) {
       },
       include: {
         spendings: true,
+        taskCompletions: {
+          include: {
+            taskTemplate: true,
+          },
+          orderBy: {
+            taskTemplate: {
+              sortOrder: 'asc',
+            },
+          },
+        },
       },
     });
 

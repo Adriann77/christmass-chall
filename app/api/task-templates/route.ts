@@ -56,10 +56,7 @@ export async function POST(request: NextRequest) {
     const { name, icon, sortOrder, isActive } = body;
 
     if (!name) {
-      return NextResponse.json(
-        { error: 'Name is required' },
-        { status: 400 },
-      );
+      return NextResponse.json({ error: 'Name is required' }, { status: 400 });
     }
 
     const template = await prisma.taskTemplate.create({
