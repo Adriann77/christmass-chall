@@ -55,17 +55,28 @@ export async function GET() {
           },
         },
       });
+    }
 
-      // Get all active task templates for user
-      const taskTemplates = await prisma.taskTemplate.findMany({
-        where: {
-          userId: session.userId,
-          isActive: true,
-        },
-      });
+    // Get all active task templates for user
+    const taskTemplates = await prisma.taskTemplate.findMany({
+      where: {
+        userId: session.userId,
+        isActive: true,
+      },
+    });
 
-      // Create task completions for all active templates
-      for (const template of taskTemplates) {
+    // Check if we need to create missing task completions
+    const existingCompletionTemplateIds = dailyTask.taskCompletions.map(
+      (tc) => tc.taskTemplateId,
+    );
+
+    const missingTemplates = taskTemplates.filter(
+      (template) => !existingCompletionTemplateIds.includes(template.id),
+    );
+
+    // Create task completions for missing templates
+    if (missingTemplates.length > 0) {
+      for (const template of missingTemplates) {
         await prisma.taskCompletion.create({
           data: {
             dailyTaskId: dailyTask.id,
@@ -75,7 +86,7 @@ export async function GET() {
         });
       }
 
-      // Refetch with completions
+      // Refetch with all completions
       dailyTask = await prisma.dailyTask.findUnique({
         where: { id: dailyTask.id },
         include: {
