@@ -25,6 +25,19 @@ import {
   Salad,
   Droplet,
   Settings,
+  Heart,
+  Utensils,
+  Coffee,
+  Moon,
+  Sun,
+  Zap,
+  Target,
+  Award,
+  Smile,
+  Music,
+  Camera,
+  Pill,
+  Bike,
 } from 'lucide-react';
 import Link from 'next/link';
 
@@ -63,6 +76,19 @@ const ICON_MAP: Record<string, React.ElementType> = {
   GraduationCap,
   Droplet,
   CheckSquare,
+  Heart,
+  Utensils,
+  Coffee,
+  Moon,
+  Sun,
+  Zap,
+  Target,
+  Award,
+  Smile,
+  Music,
+  Camera,
+  Pill,
+  Bike,
 };
 
 export default function DashboardPage() {

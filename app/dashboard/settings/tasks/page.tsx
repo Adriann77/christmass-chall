@@ -26,6 +26,19 @@ import {
   GraduationCap,
   Droplet,
   CheckCircle,
+  Heart,
+  Utensils,
+  Coffee,
+  Moon,
+  Sun,
+  Zap,
+  Target,
+  Award,
+  Smile,
+  Music,
+  Camera,
+  Pill,
+  Bike,
 } from 'lucide-react';
 
 interface TaskTemplate {
@@ -44,6 +57,19 @@ const ICON_OPTIONS = [
   { value: 'GraduationCap', label: 'Nauka', Icon: GraduationCap },
   { value: 'Droplet', label: 'Woda', Icon: Droplet },
   { value: 'CheckCircle', label: 'Check', Icon: CheckCircle },
+  { value: 'Heart', label: 'Serce', Icon: Heart },
+  { value: 'Utensils', label: 'Jedzenie', Icon: Utensils },
+  { value: 'Coffee', label: 'Kawa', Icon: Coffee },
+  { value: 'Moon', label: 'Sen', Icon: Moon },
+  { value: 'Sun', label: 'Słońce', Icon: Sun },
+  { value: 'Zap', label: 'Energia', Icon: Zap },
+  { value: 'Target', label: 'Cel', Icon: Target },
+  { value: 'Award', label: 'Nagroda', Icon: Award },
+  { value: 'Smile', label: 'Uśmiech', Icon: Smile },
+  { value: 'Music', label: 'Muzyka', Icon: Music },
+  { value: 'Camera', label: 'Zdjęcia', Icon: Camera },
+  { value: 'Pill', label: 'Zdrowie', Icon: Pill },
+  { value: 'Bike', label: 'Rower', Icon: Bike },
 ];
 
 export default function TaskTemplatesPage() {
@@ -214,7 +240,7 @@ export default function TaskTemplatesPage() {
 
                 <div>
                   <Label>Ikona</Label>
-                  <div className="grid grid-cols-4 gap-2 mt-2">
+                  <div className="grid grid-cols-5 gap-2 mt-2 max-h-60 overflow-y-auto">
                     {ICON_OPTIONS.map((option) => {
                       const Icon = option.Icon;
                       return (
@@ -236,21 +262,6 @@ export default function TaskTemplatesPage() {
                       );
                     })}
                   </div>
-                </div>
-
-                <div>
-                  <Label htmlFor="sortOrder">Kolejność</Label>
-                  <Input
-                    id="sortOrder"
-                    type="number"
-                    value={formData.sortOrder}
-                    onChange={(e) =>
-                      setFormData({
-                        ...formData,
-                        sortOrder: parseInt(e.target.value),
-                      })
-                    }
-                  />
                 </div>
 
                 <div className="flex items-center gap-2">
