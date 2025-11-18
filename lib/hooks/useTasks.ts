@@ -142,8 +142,11 @@ export function useToggleTaskCompletion() {
       // This prevents the list from jumping during the update
     },
     onSettled: () => {
-      // Refetch in background to ensure data consistency
-      queryClient.invalidateQueries({ queryKey: ['todayTask'] });
+      // Refetch in background to ensure data consistency, but don't refetch immediately
+      // to prevent page reload and task reordering
+      setTimeout(() => {
+        queryClient.invalidateQueries({ queryKey: ['todayTask'] });
+      }, 1000);
     },
   });
 }

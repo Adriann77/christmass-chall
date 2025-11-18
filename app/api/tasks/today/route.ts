@@ -35,6 +35,11 @@ export async function GET() {
           include: {
             taskTemplate: true,
           },
+          orderBy: {
+            taskTemplate: {
+              sortOrder: 'asc',
+            },
+          },
         },
       },
     });
@@ -51,6 +56,11 @@ export async function GET() {
           taskCompletions: {
             include: {
               taskTemplate: true,
+            },
+            orderBy: {
+              taskTemplate: {
+                sortOrder: 'asc',
+              },
             },
           },
         },
@@ -94,6 +104,11 @@ export async function GET() {
           taskCompletions: {
             include: {
               taskTemplate: true,
+            },
+            orderBy: {
+              taskTemplate: {
+                sortOrder: 'asc',
+              },
             },
           },
         },

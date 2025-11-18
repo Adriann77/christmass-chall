@@ -40,7 +40,12 @@ import {
   CheckCircle2,
   AlertCircle,
   XCircle,
+  Pencil,
+  Trash2,
+  Loader2,
 } from 'lucide-react';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 
 interface Spending {
   id: string;
@@ -109,6 +114,14 @@ export default function CalendarPage() {
     const now = new Date();
     return new Date(now.getFullYear(), now.getMonth(), 1);
   });
+  const [editingSpending, setEditingSpending] = useState<Spending | null>(null);
+  const [spendingForm, setSpendingForm] = useState({
+    amount: '',
+    category: '',
+    description: '',
+  });
+  const [togglingTask, setTogglingTask] = useState<string | null>(null);
+  const [deletingSpending, setDeletingSpending] = useState<string | null>(null);
   const router = useRouter();
 
   const fetchCalendarData = async (month: number, year: number) => {
@@ -157,8 +170,12 @@ export default function CalendarPage() {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 
-    // Don't open modal for future dates
-    if (clickedDate > today) {
+    // Challenge start date: November 17
+    const challengeStartDate = new Date(currentMonth.getFullYear(), 10, 17); // Month 10 = November
+    challengeStartDate.setHours(0, 0, 0, 0);
+
+    // Don't open modal for future dates or dates before challenge start
+    if (clickedDate > today || clickedDate < challengeStartDate) {
       return;
     }
 
@@ -196,6 +213,116 @@ export default function CalendarPage() {
       newMonth.setMonth(newMonth.getMonth() + direction);
       return newMonth;
     });
+  };
+
+  const handleToggleTask = async (
+    completionId: string,
+    currentValue: boolean,
+  ) => {
+    setTogglingTask(completionId);
+    try {
+      const response = await fetch(`/api/task-completions/${completionId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ completed: !currentValue }),
+      });
+
+      if (response.ok) {
+        // Update local state
+        if (selectedTask) {
+          const updatedCompletions = selectedTask.taskCompletions?.map((c) =>
+            c.id === completionId ? { ...c, completed: !currentValue } : c,
+          );
+          setSelectedTask({
+            ...selectedTask,
+            taskCompletions: updatedCompletions,
+          });
+        }
+        // Refresh calendar data
+        const month = currentMonth.getMonth();
+        const year = currentMonth.getFullYear();
+        await fetchCalendarData(month, year);
+      }
+    } catch (error) {
+      console.error('Error toggling task:', error);
+    } finally {
+      setTogglingTask(null);
+    }
+  };
+
+  const handleEditSpending = (spending: Spending) => {
+    setEditingSpending(spending);
+    setSpendingForm({
+      amount: spending.amount.toString(),
+      category: spending.category,
+      description: spending.description || '',
+    });
+  };
+
+  const handleSaveSpending = async () => {
+    if (!editingSpending) return;
+
+    try {
+      const response = await fetch(`/api/spendings/${editingSpending.id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(spendingForm),
+      });
+
+      if (response.ok) {
+        // Refresh calendar data
+        const month = currentMonth.getMonth();
+        const year = currentMonth.getFullYear();
+        await fetchCalendarData(month, year);
+        // Update selected task
+        if (selectedTask) {
+          const updatedSpendings = selectedTask.spendings.map((s) =>
+            s.id === editingSpending.id
+              ? {
+                  ...s,
+                  amount: parseFloat(spendingForm.amount),
+                  category: spendingForm.category,
+                  description: spendingForm.description || null,
+                }
+              : s,
+          );
+          setSelectedTask({ ...selectedTask, spendings: updatedSpendings });
+        }
+        setEditingSpending(null);
+        setSpendingForm({ amount: '', category: '', description: '' });
+      }
+    } catch (error) {
+      console.error('Error updating spending:', error);
+    }
+  };
+
+  const handleDeleteSpending = async (spendingId: string) => {
+    if (!confirm('Czy na pewno chcesz usunąć ten wydatek?')) return;
+
+    setDeletingSpending(spendingId);
+    try {
+      const response = await fetch(`/api/spendings/${spendingId}`, {
+        method: 'DELETE',
+      });
+
+      if (response.ok) {
+        // Refresh calendar data
+        const month = currentMonth.getMonth();
+        const year = currentMonth.getFullYear();
+        await fetchCalendarData(month, year);
+        // Update selected task
+        if (selectedTask) {
+          const updatedSpendings = selectedTask.spendings.filter(
+            (s) => s.id !== spendingId,
+          );
+          setSelectedTask({ ...selectedTask, spendings: updatedSpendings });
+        }
+      }
+    } catch (error) {
+      console.error('Error deleting spending:', error);
+    } finally {
+      setDeletingSpending(null);
+    }
   };
 
   const getDaysInMonth = (date: Date) => {
@@ -325,14 +452,30 @@ export default function CalendarPage() {
         }, 0) / totalDays
       : 0;
 
+  // Challenge start date: November 17
+  const challengeStartDate = new Date(currentMonth.getFullYear(), 10, 17); // Month 10 = November (0-indexed)
+  challengeStartDate.setHours(0, 0, 0, 0);
+
   const calendarDays = [];
   // Add empty cells for days before the first day of month
   for (let i = 0; i < firstDay; i++) {
     calendarDays.push(null);
   }
-  // Add actual days
+  // Add actual days, but hide days before November 17
   for (let day = 1; day <= daysInMonth; day++) {
-    calendarDays.push(day);
+    const currentDate = new Date(
+      currentMonth.getFullYear(),
+      currentMonth.getMonth(),
+      day,
+    );
+    currentDate.setHours(0, 0, 0, 0);
+
+    // Only show days from November 17 onwards
+    if (currentDate >= challengeStartDate) {
+      calendarDays.push(day);
+    } else {
+      calendarDays.push(null);
+    }
   }
 
   return (
@@ -437,6 +580,17 @@ export default function CalendarPage() {
                   currentMonth.getMonth(),
                   day,
                 );
+                currentDate.setHours(0, 0, 0, 0);
+
+                // Challenge start date: November 17
+                const challengeStartDate = new Date(
+                  currentMonth.getFullYear(),
+                  10,
+                  17,
+                );
+                challengeStartDate.setHours(0, 0, 0, 0);
+
+                const isBeforeStart = currentDate < challengeStartDate;
                 const isFuture = currentDate > today;
                 const isToday =
                   currentDate.getFullYear() === today.getFullYear() &&
@@ -453,14 +607,15 @@ export default function CalendarPage() {
                 });
 
                 const dayStatus = getDayStatus(task);
-                const statusStyles = isFuture
-                  ? {
-                      bg: 'bg-muted',
-                      icon: null as React.ElementType | null,
-                      iconColor: '',
-                      textColor: 'text-muted-foreground',
-                    }
-                  : getStatusStyles(dayStatus.status);
+                const statusStyles =
+                  isBeforeStart || isFuture
+                    ? {
+                        bg: 'bg-muted',
+                        icon: null as React.ElementType | null,
+                        iconColor: '',
+                        textColor: 'text-muted-foreground',
+                      }
+                    : getStatusStyles(dayStatus.status);
                 const Icon = statusStyles.icon;
 
                 return (
@@ -473,11 +628,15 @@ export default function CalendarPage() {
                   >
                     <Card
                       className={`relative ${statusStyles.bg} ${
-                        isFuture ? 'opacity-40' : 'cursor-pointer'
+                        isBeforeStart || isFuture
+                          ? 'opacity-40'
+                          : 'cursor-pointer'
                       } ${
                         isToday ? 'ring-2 ring-primary ring-offset-2' : ''
                       } transition-all hover:scale-105 h-full border-0`}
-                      onClick={() => !isFuture && handleDayClick(day)}
+                      onClick={() =>
+                        !isBeforeStart && !isFuture && handleDayClick(day)
+                      }
                     >
                       <CardContent className='p-1.5 h-full flex flex-col items-center justify-center relative'>
                         <p
@@ -485,7 +644,7 @@ export default function CalendarPage() {
                         >
                           {day}
                         </p>
-                        {!isFuture && Icon && (
+                        {!isBeforeStart && !isFuture && Icon && (
                           <Icon
                             className={`absolute -top-6 right-0 h-3.5 w-3.5 ${statusStyles.iconColor}`}
                           />
@@ -529,41 +688,62 @@ export default function CalendarPage() {
                 <div className='space-y-2'>
                   {selectedTask.taskCompletions &&
                   selectedTask.taskCompletions.length > 0 ? (
-                    selectedTask.taskCompletions.map((completion) => {
-                      const Icon =
-                        ICON_MAP[completion.taskTemplate.icon] || CheckSquare;
-                      const isCompleted = completion.completed;
-                      return (
-                        <div
-                          key={completion.id}
-                          className={`flex items-center gap-3 p-3 rounded-lg border ${
-                            isCompleted
-                              ? 'bg-secondary/20 border-secondary'
-                              : 'bg-muted/20 border-muted'
-                          }`}
-                        >
+                    selectedTask.taskCompletions
+                      .sort(
+                        (a, b) =>
+                          a.taskTemplate.sortOrder - b.taskTemplate.sortOrder,
+                      )
+                      .map((completion) => {
+                        const Icon =
+                          ICON_MAP[completion.taskTemplate.icon] || CheckSquare;
+                        const isCompleted = completion.completed;
+                        const isToggling = togglingTask === completion.id;
+                        return (
                           <div
-                            className={`w-6 h-6 rounded-full flex items-center justify-center ${
+                            key={completion.id}
+                            className={`flex items-center gap-3 p-3 rounded-lg border cursor-pointer transition-all hover:shadow-md ${
                               isCompleted
-                                ? 'bg-secondary text-secondary-foreground'
-                                : 'bg-muted text-muted-foreground'
-                            }`}
+                                ? 'bg-secondary/20 border-secondary'
+                                : 'bg-muted/20 border-muted'
+                            } ${isToggling ? 'opacity-60' : ''}`}
+                            onClick={() =>
+                              !isToggling &&
+                              handleToggleTask(completion.id, isCompleted)
+                            }
                           >
-                            {isCompleted ? '✓' : '○'}
+                            {isToggling ? (
+                              <Loader2 className='h-6 w-6 animate-spin text-primary' />
+                            ) : (
+                              <div
+                                className={`w-6 h-6 rounded-full flex items-center justify-center ${
+                                  isCompleted
+                                    ? 'bg-secondary text-secondary-foreground'
+                                    : 'bg-muted text-muted-foreground'
+                                }`}
+                              >
+                                {isCompleted ? '✓' : '○'}
+                              </div>
+                            )}
+                            <Icon
+                              className={`h-5 w-5 ${
+                                isCompleted
+                                  ? 'text-secondary'
+                                  : 'text-muted-foreground'
+                              }`}
+                            />
+                            <span
+                              className={`font-medium flex-1 ${
+                                isCompleted ? 'line-through' : ''
+                              }`}
+                            >
+                              {completion.taskTemplate.name}
+                            </span>
+                            {isCompleted && (
+                              <span className='text-2xl'>✅</span>
+                            )}
                           </div>
-                          <Icon
-                            className={`h-5 w-5 ${
-                              isCompleted
-                                ? 'text-secondary'
-                                : 'text-muted-foreground'
-                            }`}
-                          />
-                          <span className='font-medium'>
-                            {completion.taskTemplate.name}
-                          </span>
-                        </div>
-                      );
-                    })
+                        );
+                      })
                   ) : (
                     <div className='p-8 text-center rounded-lg border-2 border-dashed bg-muted/20'>
                       <CheckSquare className='h-12 w-12 mx-auto mb-2 text-muted-foreground' />
@@ -619,9 +799,36 @@ export default function CalendarPage() {
                             {spending.amount.toFixed(2)} zł
                           </p>
                         </div>
-                        <p className='text-xs text-muted-foreground'>
-                          {new Date(spending.createdAt).toLocaleString('pl-PL')}
-                        </p>
+                        <div className='flex items-center justify-between mt-2'>
+                          <p className='text-xs text-muted-foreground'>
+                            {new Date(spending.createdAt).toLocaleString(
+                              'pl-PL',
+                            )}
+                          </p>
+                          <div className='flex gap-2'>
+                            <Button
+                              variant='ghost'
+                              size='icon'
+                              className='h-8 w-8'
+                              onClick={() => handleEditSpending(spending)}
+                            >
+                              <Pencil className='h-4 w-4' />
+                            </Button>
+                            <Button
+                              variant='ghost'
+                              size='icon'
+                              className='h-8 w-8 text-red-600 hover:text-red-700 hover:bg-red-50'
+                              onClick={() => handleDeleteSpending(spending.id)}
+                              disabled={deletingSpending === spending.id}
+                            >
+                              {deletingSpending === spending.id ? (
+                                <Loader2 className='h-4 w-4 animate-spin' />
+                              ) : (
+                                <Trash2 className='h-4 w-4' />
+                              )}
+                            </Button>
+                          </div>
+                        </div>
                       </div>
                     ))}
 
@@ -648,6 +855,85 @@ export default function CalendarPage() {
               </div>
             </div>
           )}
+        </DialogContent>
+      </Dialog>
+
+      {/* Edit Spending Dialog */}
+      <Dialog
+        open={!!editingSpending}
+        onOpenChange={() => {
+          setEditingSpending(null);
+          setSpendingForm({ amount: '', category: '', description: '' });
+        }}
+      >
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Edytuj wydatek</DialogTitle>
+            <DialogDescription>Zmień szczegóły wydatku</DialogDescription>
+          </DialogHeader>
+          <div className='space-y-4'>
+            <div>
+              <Label htmlFor='category'>Kategoria</Label>
+              <Input
+                id='category'
+                value={spendingForm.category}
+                onChange={(e) =>
+                  setSpendingForm({ ...spendingForm, category: e.target.value })
+                }
+                placeholder='Kategoria'
+                required
+              />
+            </div>
+            <div>
+              <Label htmlFor='amount'>Kwota</Label>
+              <Input
+                id='amount'
+                type='number'
+                step='0.01'
+                value={spendingForm.amount}
+                onChange={(e) =>
+                  setSpendingForm({ ...spendingForm, amount: e.target.value })
+                }
+                placeholder='0.00'
+                required
+              />
+            </div>
+            <div>
+              <Label htmlFor='description'>Opis (opcjonalnie)</Label>
+              <Input
+                id='description'
+                value={spendingForm.description}
+                onChange={(e) =>
+                  setSpendingForm({
+                    ...spendingForm,
+                    description: e.target.value,
+                  })
+                }
+                placeholder='Opis'
+              />
+            </div>
+            <div className='flex gap-2'>
+              <Button
+                onClick={handleSaveSpending}
+                className='flex-1'
+              >
+                Zapisz
+              </Button>
+              <Button
+                variant='outline'
+                onClick={() => {
+                  setEditingSpending(null);
+                  setSpendingForm({
+                    amount: '',
+                    category: '',
+                    description: '',
+                  });
+                }}
+              >
+                Anuluj
+              </Button>
+            </div>
+          </div>
         </DialogContent>
       </Dialog>
     </div>

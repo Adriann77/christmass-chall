@@ -220,64 +220,71 @@ export default function DashboardPage() {
               </Card>
             ) : (
               <>
-                {completions.map((completion, index) => {
-                  const Icon =
-                    ICON_MAP[completion.taskTemplate.icon] || CheckSquare;
-                  const isCompleted = completion.completed;
-                  const isPending =
-                    toggleTask.isPending &&
-                    toggleTask.variables?.completionId === completion.id;
+                {completions
+                  .sort(
+                    (a, b) =>
+                      a.taskTemplate.sortOrder - b.taskTemplate.sortOrder,
+                  )
+                  .map((completion, index) => {
+                    const Icon =
+                      ICON_MAP[completion.taskTemplate.icon] || CheckSquare;
+                    const isCompleted = completion.completed;
+                    const isPending =
+                      toggleTask.isPending &&
+                      toggleTask.variables?.completionId === completion.id;
 
-                  return (
-                    <motion.div
-                      key={completion.id}
-                      initial={{ opacity: 0, x: -20 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      transition={{ delay: 0.2 + index * 0.1, duration: 0.5 }}
-                    >
-                      <Card
-                        className={`cursor-pointer transition-all hover:shadow-lg ${
-                          isCompleted ? 'bg-accent border-primary' : ''
-                        } ${isPending ? 'opacity-60' : ''}`}
-                        onClick={() =>
-                          !isPending &&
-                          handleTaskToggle(completion.id, isCompleted)
-                        }
+                    return (
+                      <motion.div
+                        key={completion.taskTemplate.id}
+                        initial={{ opacity: 0, x: -20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: 0.2 + index * 0.1, duration: 0.5 }}
                       >
-                        <CardContent className='flex items-center gap-4 p-4'>
-                          {isPending ? (
-                            <Loader2 className='h-6 w-6 animate-spin text-primary' />
-                          ) : (
-                            <Checkbox
-                              checked={isCompleted}
-                              onCheckedChange={() =>
-                                handleTaskToggle(completion.id, isCompleted)
-                              }
-                              className='h-6 w-6'
+                        <Card
+                          className={`cursor-pointer transition-all hover:shadow-lg ${
+                            isCompleted ? 'bg-accent border-primary' : ''
+                          } ${isPending ? 'opacity-60' : ''}`}
+                          onClick={() =>
+                            !isPending &&
+                            handleTaskToggle(completion.id, isCompleted)
+                          }
+                        >
+                          <CardContent className='flex items-center gap-4 p-4'>
+                            {isPending ? (
+                              <Loader2 className='h-6 w-6 animate-spin text-primary' />
+                            ) : (
+                              <Checkbox
+                                checked={isCompleted}
+                                onCheckedChange={() =>
+                                  handleTaskToggle(completion.id, isCompleted)
+                                }
+                                className='h-6 w-6'
+                              />
+                            )}
+                            <Icon
+                              className={`h-6 w-6 ${
+                                isCompleted
+                                  ? 'text-primary'
+                                  : 'text-muted-foreground'
+                              }`}
                             />
-                          )}
-                          <Icon
-                            className={`h-6 w-6 ${
-                              isCompleted
-                                ? 'text-primary'
-                                : 'text-muted-foreground'
-                            }`}
-                          />
-                          <span
-                            className={`flex-1 font-medium ${
-                              isCompleted
-                                ? 'line-through text-muted-foreground'
-                                : ''
-                            }`}
-                          >
-                            {completion.taskTemplate.name}
-                          </span>
-                          {isCompleted && <span className='text-2xl'>✅</span>}
-                        </CardContent>
-                      </Card>
-                    </motion.div>
-                  );
-                })}
+                            <span
+                              className={`flex-1 font-medium ${
+                                isCompleted
+                                  ? 'line-through text-muted-foreground'
+                                  : ''
+                              }`}
+                            >
+                              {completion.taskTemplate.name}
+                            </span>
+                            {isCompleted && (
+                              <span className='text-2xl'>✅</span>
+                            )}
+                          </CardContent>
+                        </Card>
+                      </motion.div>
+                    );
+                  })}
                 {/* Add Task Card - at the bottom of the list */}
                 <motion.div
                   initial={{ opacity: 0, y: -20 }}
