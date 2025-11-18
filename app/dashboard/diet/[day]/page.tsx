@@ -72,30 +72,6 @@ export default function DayDetailPage() {
 
   return (
     <div className='min-h-screen flex flex-col bg-background'>
-      {/* Header */}
-      <header className='sticky top-0 z-10 bg-card border-b shadow-sm'>
-        <div className='container mx-auto px-4 py-4'>
-          <div className='flex items-center gap-3'>
-            <Button
-              variant='ghost'
-              size='icon'
-              onClick={() => router.back()}
-              className='h-9 w-9'
-            >
-              <ChevronLeft className='h-5 w-5' />
-            </Button>
-            <div className='flex-1'>
-              <h1 className='text-2xl font-bold flex items-center gap-2'>
-                Dzień {dayData.day}
-              </h1>
-              <p className='text-sm text-muted-foreground'>
-                {dayData.meals.length} posiłki dziennie
-              </p>
-            </div>
-          </div>
-        </div>
-      </header>
-
       {/* Main Content */}
       <main className='flex-1 overflow-y-auto pb-20'>
         <div className='container mx-auto px-4 py-6 space-y-6 max-w-2xl'>

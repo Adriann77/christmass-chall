@@ -3,35 +3,14 @@
 import { motion } from 'framer-motion';
 import Link from 'next/link';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import {
-  CheckSquare,
-  DollarSign,
-  Salad,
-  Calendar,
-  ChevronRight,
-  Flame,
-  Apple,
-} from 'lucide-react';
+import { Salad, ChevronRight, Flame, Apple } from 'lucide-react';
 import dietData from '@/app/data/diet.json';
 
 export default function DietPage() {
   return (
     <div className='h-screen flex flex-col bg-background overflow-hidden'>
-      {/* Header */}
-      <header className='shrink-0 bg-card border-b shadow-sm'>
-        <div className='container mx-auto px-4 py-4'>
-          <h1 className='text-2xl font-bold text-center flex items-center justify-center gap-2'>
-            <Salad className='h-7 w-7 text-primary' />
-            Plan Diety
-          </h1>
-          <p className='text-center text-sm text-muted-foreground mt-1'>
-            7-dniowy plan żywieniowy
-          </p>
-        </div>
-      </header>
-
       {/* Main Content */}
-      <main className='flex-1 overflow-y-auto pb-20'>
+      <main className='flex-1 overflow-y-auto pb-20 pt-16'>
         <div className='container mx-auto px-4 py-6 space-y-4 max-w-2xl'>
           {dietData.map((day, index) => (
             <motion.div
@@ -101,42 +80,6 @@ export default function DietPage() {
           ))}
         </div>
       </main>
-
-      {/* Bottom Navigation */}
-      <nav className='fixed bottom-0 left-0 right-0 bg-card border-t shadow-lg'>
-        <div className='container mx-auto px-4'>
-          <div className='flex justify-around py-3'>
-            <Link
-              href='/dashboard'
-              className='flex flex-col items-center gap-1 text-muted-foreground hover:text-foreground'
-            >
-              <CheckSquare className='h-6 w-6' />
-              <span className='text-xs'>Zadania</span>
-            </Link>
-            <Link
-              href='/dashboard/spending'
-              className='flex flex-col items-center gap-1 text-muted-foreground hover:text-foreground'
-            >
-              <DollarSign className='h-6 w-6' />
-              <span className='text-xs'>Wydatki</span>
-            </Link>
-            <Link
-              href='/dashboard/diet'
-              className='flex flex-col items-center gap-1 text-primary'
-            >
-              <Salad className='h-6 w-6' />
-              <span className='text-xs font-medium'>Dieta</span>
-            </Link>
-            <Link
-              href='/dashboard/calendar'
-              className='flex flex-col items-center gap-1 text-muted-foreground hover:text-foreground'
-            >
-              <Calendar className='h-6 w-6' />
-              <span className='text-xs'>Kalendarz</span>
-            </Link>
-          </div>
-        </div>
-      </nav>
     </div>
   );
 }

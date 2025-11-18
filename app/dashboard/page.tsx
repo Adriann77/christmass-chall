@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import {
   Card,
@@ -18,11 +18,7 @@ import {
   Apple,
   Book,
   GraduationCap,
-  Calendar,
-  LogOut,
-  DollarSign,
   CheckSquare,
-  Salad,
   Droplet,
   Settings,
   Heart,
@@ -38,35 +34,15 @@ import {
   Camera,
   Pill,
   Bike,
+  Loader2,
+  Plus,
 } from 'lucide-react';
 import Link from 'next/link';
-
-interface TaskTemplate {
-  id: string;
-  name: string;
-  icon: string;
-  isActive: boolean;
-  sortOrder: number;
-}
-
-interface TaskCompletion {
-  id: string;
-  completed: boolean;
-  taskTemplate: TaskTemplate;
-}
-
-interface DailyTask {
-  id: string;
-  date: string;
-  steps: boolean;
-  training: boolean;
-  diet: boolean;
-  book: boolean;
-  learning: boolean;
-  water: boolean;
-  spendings: unknown[];
-  taskCompletions?: TaskCompletion[];
-}
+import {
+  useUser,
+  useTodayTask,
+  useToggleTaskCompletion,
+} from '@/lib/hooks/useTasks';
 
 const ICON_MAP: Record<string, React.ElementType> = {
   TrendingUp,
@@ -92,71 +68,26 @@ const ICON_MAP: Record<string, React.ElementType> = {
 };
 
 export default function DashboardPage() {
-  const [dailyTask, setDailyTask] = useState<DailyTask | null>(null);
-  const [taskTemplates, setTaskTemplates] = useState<TaskTemplate[]>([]);
-  const [user, setUser] = useState<any>(null);
-  const [loading, setLoading] = useState(true);
   const router = useRouter();
+  const { data: userData, isLoading: isLoadingUser } = useUser();
+  const { data: taskData, isLoading: isLoadingTask } = useTodayTask();
+  const toggleTask = useToggleTaskCompletion();
 
+  const user = userData?.user;
+  const dailyTask = taskData?.task;
+
+  // Redirect if not authenticated
   useEffect(() => {
-    async function checkAuth() {
-      const response = await fetch('/api/auth/me');
-      const data = await response.json();
-
-      if (!data.user) {
-        router.push('/login');
-        return;
-      }
-
-      setUser(data.user);
-
-      // Fetch task templates
-      const templatesResponse = await fetch('/api/task-templates');
-      if (templatesResponse.ok) {
-        const templatesData = await templatesResponse.json();
-        setTaskTemplates(templatesData.filter((t: TaskTemplate) => t.isActive));
-      }
-
-      // Fetch today's task
-      const taskResponse = await fetch('/api/tasks/today');
-      const taskData = await taskResponse.json();
-      setDailyTask(taskData.task);
-      setLoading(false);
+    if (!isLoadingUser && !user) {
+      router.push('/login');
     }
+  }, [isLoadingUser, user, router]);
 
-    checkAuth();
-  }, [router]);
-
-  const handleLogout = async () => {
-    await fetch('/api/auth/logout', { method: 'POST' });
-    router.push('/login');
+  const handleTaskToggle = (completionId: string, currentValue: boolean) => {
+    toggleTask.mutate({ completionId, completed: !currentValue });
   };
 
-  const handleTaskToggle = async (
-    completionId: string,
-    currentValue: boolean,
-  ) => {
-    if (!dailyTask) return;
-
-    try {
-      const response = await fetch(`/api/task-completions/${completionId}`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ completed: !currentValue }),
-      });
-
-      if (response.ok) {
-        // Refetch task to get updated completions
-        const taskResponse = await fetch('/api/tasks/today');
-        const taskData = await taskResponse.json();
-        setDailyTask(taskData.task);
-      }
-    } catch (error) {
-      console.error('Failed to update task:', error);
-    }
-  };
-
-  if (loading || !user) {
+  if (isLoadingUser || isLoadingTask || !user) {
     return (
       <div className='min-h-screen flex items-center justify-center'>
         <motion.div
@@ -218,27 +149,8 @@ export default function DashboardPage() {
 
   return (
     <div className='h-screen flex flex-col bg-background overflow-hidden'>
-      {/* Header */}
-      <header className='shrink-0 flex justify-between items-center px-4 py-2 border-b bg-background'>
-        <Link href='/dashboard/settings/tasks'>
-          <Button
-            variant='ghost'
-            size='icon'
-          >
-            <Settings className='h-5 w-5' />
-          </Button>
-        </Link>
-        <Button
-          variant='ghost'
-          size='icon'
-          onClick={handleLogout}
-        >
-          <LogOut className='h-5 w-5' />
-        </Button>
-      </header>
-
       {/* Main Content */}
-      <main className='flex-1 overflow-y-auto pb-20'>
+      <main className='flex-1 overflow-y-auto pb-20 pt-10'>
         <div className='container mx-auto px-4 py-6 space-y-6 max-w-2xl'>
           {/* Day Counter */}
           <motion.div
@@ -273,9 +185,6 @@ export default function DashboardPage() {
             transition={{ delay: 0.1, duration: 0.5 }}
           >
             <Card>
-              <CardHeader className='pb-3'>
-                <CardTitle className='text-lg'>Dzisiejszy postęp</CardTitle>
-              </CardHeader>
               <CardContent>
                 <div className='space-y-2'>
                   <div className='flex justify-between text-sm'>
@@ -310,96 +219,98 @@ export default function DashboardPage() {
                 </Link>
               </Card>
             ) : (
-              completions.map((completion, index) => {
-                const Icon =
-                  ICON_MAP[completion.taskTemplate.icon] || CheckSquare;
-                const isCompleted = completion.completed;
+              <>
+                {completions.map((completion, index) => {
+                  const Icon =
+                    ICON_MAP[completion.taskTemplate.icon] || CheckSquare;
+                  const isCompleted = completion.completed;
+                  const isPending =
+                    toggleTask.isPending &&
+                    toggleTask.variables?.completionId === completion.id;
 
-                return (
-                  <motion.div
-                    key={completion.id}
-                    initial={{ opacity: 0, x: -20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: 0.2 + index * 0.1, duration: 0.5 }}
-                  >
-                    <Card
-                      className={`cursor-pointer transition-all hover:shadow-lg ${
-                        isCompleted ? 'bg-accent border-primary' : ''
-                      }`}
-                      onClick={() =>
-                        handleTaskToggle(completion.id, isCompleted)
-                      }
+                  return (
+                    <motion.div
+                      key={completion.id}
+                      initial={{ opacity: 0, x: -20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: 0.2 + index * 0.1, duration: 0.5 }}
                     >
+                      <Card
+                        className={`cursor-pointer transition-all hover:shadow-lg ${
+                          isCompleted ? 'bg-accent border-primary' : ''
+                        } ${isPending ? 'opacity-60' : ''}`}
+                        onClick={() =>
+                          !isPending &&
+                          handleTaskToggle(completion.id, isCompleted)
+                        }
+                      >
+                        <CardContent className='flex items-center gap-4 p-4'>
+                          {isPending ? (
+                            <Loader2 className='h-6 w-6 animate-spin text-primary' />
+                          ) : (
+                            <Checkbox
+                              checked={isCompleted}
+                              onCheckedChange={() =>
+                                handleTaskToggle(completion.id, isCompleted)
+                              }
+                              className='h-6 w-6'
+                            />
+                          )}
+                          <Icon
+                            className={`h-6 w-6 ${
+                              isCompleted
+                                ? 'text-primary'
+                                : 'text-muted-foreground'
+                            }`}
+                          />
+                          <span
+                            className={`flex-1 font-medium ${
+                              isCompleted
+                                ? 'line-through text-muted-foreground'
+                                : ''
+                            }`}
+                          >
+                            {completion.taskTemplate.name}
+                          </span>
+                          {isCompleted && <span className='text-2xl'>✅</span>}
+                        </CardContent>
+                      </Card>
+                    </motion.div>
+                  );
+                })}
+                {/* Add Task Card - at the bottom of the list */}
+                <motion.div
+                  initial={{ opacity: 0, y: -20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{
+                    delay: 0.2 + completions.length * 0.1,
+                    duration: 0.5,
+                  }}
+                >
+                  <Link href='/dashboard/settings/tasks'>
+                    <Card className='cursor-pointer transition-all hover:shadow-lg hover:scale-[1.02] border-2 hover:border-primary bg-gradient-to-br from-primary/5 to-secondary/5'>
                       <CardContent className='flex items-center gap-4 p-4'>
-                        <Checkbox
-                          checked={isCompleted}
-                          onCheckedChange={() =>
-                            handleTaskToggle(completion.id, isCompleted)
-                          }
-                          className='h-6 w-6'
-                        />
-                        <Icon
-                          className={`h-6 w-6 ${
-                            isCompleted
-                              ? 'text-primary'
-                              : 'text-muted-foreground'
-                          }`}
-                        />
-                        <span
-                          className={`flex-1 font-medium ${
-                            isCompleted
-                              ? 'line-through text-muted-foreground'
-                              : ''
-                          }`}
-                        >
-                          {completion.taskTemplate.name}
-                        </span>
-                        {isCompleted && <span className='text-2xl'>✅</span>}
+                        <div className='p-3 rounded-full bg-primary/10'>
+                          <Plus className='h-6 w-6 text-primary' />
+                        </div>
+                        <div className='flex-1'>
+                          <h3 className='font-semibold text-lg'>
+                            Dodaj zadanie dzienne
+                          </h3>
+                          <p className='text-sm text-muted-foreground'>
+                            Zarządzaj swoimi codziennymi zadaniami
+                          </p>
+                        </div>
+                        <Settings className='h-5 w-5 text-muted-foreground' />
                       </CardContent>
                     </Card>
-                  </motion.div>
-                );
-              })
+                  </Link>
+                </motion.div>
+              </>
             )}
           </div>
         </div>
       </main>
-
-      {/* Bottom Navigation */}
-      <nav className='fixed bottom-0 left-0 right-0 bg-card border-t shadow-lg'>
-        <div className='container mx-auto px-4'>
-          <div className='flex justify-around py-3'>
-            <Link
-              href='/dashboard'
-              className='flex flex-col items-center gap-1 text-primary'
-            >
-              <CheckSquare className='h-6 w-6' />
-              <span className='text-xs font-medium'>Zadania</span>
-            </Link>
-            <Link
-              href='/dashboard/spending'
-              className='flex flex-col items-center gap-1 text-muted-foreground hover:text-foreground'
-            >
-              <DollarSign className='h-6 w-6' />
-              <span className='text-xs'>Wydatki</span>
-            </Link>
-            <Link
-              href='/dashboard/diet'
-              className='flex flex-col items-center gap-1 text-muted-foreground hover:text-foreground'
-            >
-              <Salad className='h-6 w-6' />
-              <span className='text-xs'>Dieta</span>
-            </Link>
-            <Link
-              href='/dashboard/calendar'
-              className='flex flex-col items-center gap-1 text-muted-foreground hover:text-foreground'
-            >
-              <Calendar className='h-6 w-6' />
-              <span className='text-xs'>Kalendarz</span>
-            </Link>
-          </div>
-        </div>
-      </nav>
     </div>
   );
 }

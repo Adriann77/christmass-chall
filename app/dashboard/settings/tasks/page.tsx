@@ -192,119 +192,106 @@ export default function TaskTemplatesPage() {
 
   return (
     <div className='h-screen flex flex-col bg-gradient-to-br from-red-50 via-green-50 to-red-50 overflow-hidden'>
-      {/* Header */}
-      <div className='shrink-0 bg-gradient-to-r from-red-600 to-green-600 text-white p-4 shadow-lg'>
-        <div className='container mx-auto flex items-center justify-between'>
-          <div className='flex items-center gap-3'>
-            <Button
-              variant='ghost'
-              size='icon'
-              onClick={() => router.push('/dashboard')}
-              className='text-white hover:bg-white/20'
+      {/* Main Content */}
+      <main className='flex-1 overflow-y-auto pb-20 pt-16'>
+        <div className='container mx-auto px-4 py-6 space-y-6 max-w-2xl'>
+          <div className='flex items-center justify-between mb-4'>
+            <h1 className='text-2xl font-bold text-gray-900'>
+              Zarządzaj Zadaniami
+            </h1>
+            <Dialog
+              open={dialogOpen}
+              onOpenChange={setDialogOpen}
             >
-              <ArrowLeft className='h-5 w-5' />
-            </Button>
-            <h1 className='text-xl font-bold'>Zarządzaj Zadaniami</h1>
-          </div>
-
-          <Dialog
-            open={dialogOpen}
-            onOpenChange={setDialogOpen}
-          >
-            <DialogTrigger asChild>
-              <Button
-                variant='ghost'
-                size='icon'
-                className='text-white hover:bg-white/20'
-                onClick={resetForm}
-              >
-                <Plus className='h-5 w-5' />
-              </Button>
-            </DialogTrigger>
-            <DialogContent>
-              <DialogHeader>
-                <DialogTitle>
-                  {editingTemplate ? 'Edytuj Zadanie' : 'Nowe Zadanie'}
-                </DialogTitle>
-              </DialogHeader>
-              <form
-                onSubmit={handleSubmit}
-                className='space-y-4'
-              >
-                <div>
-                  <Label htmlFor='name'>Nazwa</Label>
-                  <Input
-                    id='name'
-                    value={formData.name}
-                    onChange={(e) =>
-                      setFormData({ ...formData, name: e.target.value })
-                    }
-                    placeholder='Nazwa zadania'
-                    required
-                  />
-                </div>
-
-                <div>
-                  <Label>Ikona</Label>
-                  <div className='grid grid-cols-5 gap-2 mt-2 max-h-60 overflow-y-auto'>
-                    {ICON_OPTIONS.map((option) => {
-                      const Icon = option.Icon;
-                      return (
-                        <button
-                          key={option.value}
-                          type='button'
-                          onClick={() =>
-                            setFormData({ ...formData, icon: option.value })
-                          }
-                          className={`p-3 rounded-lg border-2 flex flex-col items-center gap-1 ${
-                            formData.icon === option.value
-                              ? 'border-red-600 bg-red-50'
-                              : 'border-gray-200 hover:border-gray-300'
-                          }`}
-                        >
-                          <Icon className='h-5 w-5' />
-                          <span className='text-xs'>{option.label}</span>
-                        </button>
-                      );
-                    })}
+              <DialogTrigger asChild>
+                <Button
+                  variant='default'
+                  size='icon'
+                  className='h-10 w-10 rounded-full'
+                  onClick={resetForm}
+                >
+                  <Plus className='h-5 w-5' />
+                </Button>
+              </DialogTrigger>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>
+                    {editingTemplate ? 'Edytuj Zadanie' : 'Nowe Zadanie'}
+                  </DialogTitle>
+                </DialogHeader>
+                <form
+                  onSubmit={handleSubmit}
+                  className='space-y-4'
+                >
+                  <div>
+                    <Label htmlFor='name'>Nazwa</Label>
+                    <Input
+                      id='name'
+                      value={formData.name}
+                      onChange={(e) =>
+                        setFormData({ ...formData, name: e.target.value })
+                      }
+                      placeholder='Nazwa zadania'
+                      required
+                    />
                   </div>
-                </div>
 
-                <div className='flex items-center gap-2'>
-                  <Checkbox
-                    id='isActive'
-                    checked={formData.isActive}
-                    onCheckedChange={(checked) =>
-                      setFormData({ ...formData, isActive: !!checked })
-                    }
-                  />
-                  <Label htmlFor='isActive'>Aktywne</Label>
-                </div>
+                  <div>
+                    <Label>Ikona</Label>
+                    <div className='grid grid-cols-5 gap-2 mt-2 max-h-60 overflow-y-auto'>
+                      {ICON_OPTIONS.map((option) => {
+                        const Icon = option.Icon;
+                        return (
+                          <button
+                            key={option.value}
+                            type='button'
+                            onClick={() =>
+                              setFormData({ ...formData, icon: option.value })
+                            }
+                            className={`p-3 rounded-lg border-2 flex flex-col items-center gap-1 ${
+                              formData.icon === option.value
+                                ? 'border-red-600 bg-red-50'
+                                : 'border-gray-200 hover:border-gray-300'
+                            }`}
+                          >
+                            <Icon className='h-5 w-5' />
+                            <span className='text-xs'>{option.label}</span>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
 
-                <div className='flex gap-2'>
-                  <Button
-                    type='submit'
-                    className='flex-1'
-                  >
-                    {editingTemplate ? 'Zapisz' : 'Dodaj'}
-                  </Button>
-                  <Button
-                    type='button'
-                    variant='outline'
-                    onClick={resetForm}
-                  >
-                    Anuluj
-                  </Button>
-                </div>
-              </form>
-            </DialogContent>
-          </Dialog>
-        </div>
-      </div>
+                  <div className='flex items-center gap-2'>
+                    <Checkbox
+                      id='isActive'
+                      checked={formData.isActive}
+                      onCheckedChange={(checked) =>
+                        setFormData({ ...formData, isActive: !!checked })
+                      }
+                    />
+                    <Label htmlFor='isActive'>Aktywne</Label>
+                  </div>
 
-      {/* Content */}
-      <div className='flex-1 overflow-y-auto'>
-        <div className='container mx-auto p-4 space-y-4'>
+                  <div className='flex gap-2'>
+                    <Button
+                      type='submit'
+                      className='flex-1'
+                    >
+                      {editingTemplate ? 'Zapisz' : 'Dodaj'}
+                    </Button>
+                    <Button
+                      type='button'
+                      variant='outline'
+                      onClick={resetForm}
+                    >
+                      Anuluj
+                    </Button>
+                  </div>
+                </form>
+              </DialogContent>
+            </Dialog>
+          </div>
           {templates.length === 0 ? (
             <Card className='p-8 text-center'>
               <p className='text-gray-500 mb-4'>
@@ -336,10 +323,6 @@ export default function TaskTemplatesPage() {
                       </div>
                       <div>
                         <h3 className='font-semibold'>{template.name}</h3>
-                        <p className='text-sm text-gray-500'>
-                          Kolejność: {template.sortOrder} •{' '}
-                          {template.isActive ? 'Aktywne' : 'Nieaktywne'}
-                        </p>
                       </div>
                     </div>
 
@@ -366,7 +349,7 @@ export default function TaskTemplatesPage() {
             })
           )}
         </div>
-      </div>
+      </main>
     </div>
   );
 }

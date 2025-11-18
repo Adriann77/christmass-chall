@@ -130,9 +130,6 @@ export default function LoginPage() {
                   Zarejestruj się
                 </Link>
               </p>
-              <p className='text-xs text-muted-foreground text-center'>
-                Konta demo: adrian/adrian lub justyna/justyna
-              </p>
             </form>
           </CardContent>
         </Card>

@@ -13,13 +13,10 @@ import {
 } from '@/components/ui/dialog';
 import { motion } from 'framer-motion';
 import {
-  Calendar as CalendarIcon,
   CheckSquare,
   DollarSign,
-  LogOut,
   ChevronLeft,
   ChevronRight,
-  Salad,
   TrendingUp,
   Dumbbell,
   Apple,
@@ -39,8 +36,11 @@ import {
   Camera,
   Pill,
   Bike,
+  Star,
+  CheckCircle2,
+  AlertCircle,
+  XCircle,
 } from 'lucide-react';
-import Link from 'next/link';
 
 interface Spending {
   id: string;
@@ -148,11 +148,6 @@ export default function CalendarPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentMonth]);
 
-  const handleLogout = async () => {
-    await fetch('/api/auth/logout', { method: 'POST' });
-    router.push('/login');
-  };
-
   const handleDayClick = (day: number) => {
     const clickedDate = new Date(
       currentMonth.getFullYear(),
@@ -246,52 +241,89 @@ export default function CalendarPage() {
     return { completed, total: completions.length };
   };
 
-  const getDayStatus = (task: DailyTask) => {
+  const getDayStatus = (task: DailyTask | undefined) => {
+    if (!task) return { percentage: 0, status: 'zero' };
     const { completed, total } = getTaskCompletion(task);
-    if (total === 0) return 'incomplete';
-    if (completed === total) return 'perfect';
-    if (completed >= total * 0.6) return 'good';
-    if (completed > 0) return 'partial';
-    return 'incomplete';
+    if (total === 0) return { percentage: 0, status: 'zero' };
+    const percentage = (completed / total) * 100;
+    if (percentage === 100) return { percentage, status: 'perfect' };
+    if (percentage >= 75) return { percentage, status: 'good' };
+    if (percentage >= 25) return { percentage, status: 'partial' };
+    if (percentage > 0) return { percentage, status: 'low' };
+    return { percentage: 0, status: 'zero' };
   };
 
-  const getStatusColor = (status: string) => {
+  const getStatusStyles = (status: string) => {
     switch (status) {
       case 'perfect':
-        return 'bg-secondary text-secondary-foreground border-secondary';
+        return {
+          bg: 'bg-yellow-400',
+          icon: Star,
+          iconColor: 'text-yellow-600',
+          textColor: 'text-gray-900',
+        };
       case 'good':
-        return 'bg-accent text-accent-foreground border-accent';
+        return {
+          bg: 'bg-green-500',
+          icon: CheckCircle2,
+          iconColor: 'text-green-700',
+          textColor: 'text-white',
+        };
       case 'partial':
-        return 'bg-muted text-muted-foreground border-muted';
+        return {
+          bg: 'bg-yellow-300',
+          icon: AlertCircle,
+          iconColor: 'text-yellow-700',
+          textColor: 'text-gray-900',
+        };
+      case 'low':
+        return {
+          bg: 'bg-yellow-600',
+          icon: AlertCircle,
+          iconColor: 'text-yellow-900',
+          textColor: 'text-white',
+        };
       default:
-        return 'bg-card text-card-foreground border-border';
+        return {
+          bg: 'bg-red-500',
+          icon: XCircle,
+          iconColor: 'text-red-700',
+          textColor: 'text-white',
+        };
     }
   };
-
-  const getStatusEmoji = (status: string) => {
-    switch (status) {
-      case 'perfect':
-        return '🌟';
-      case 'good':
-        return '✅';
-      case 'partial':
-        return '⚠️';
-      default:
-        return '❌';
-    }
-  };
-
-  const perfectDays = tasks.filter((t) => getDayStatus(t) === 'perfect').length;
-  const goodDays = tasks.filter((t) => getDayStatus(t) === 'good').length;
-  const partialDays = tasks.filter((t) => getDayStatus(t) === 'partial').length;
-  const incompleteDays = tasks.filter(
-    (t) => getDayStatus(t) === 'incomplete',
-  ).length;
 
   const daysInMonth = getDaysInMonth(currentMonth);
   const firstDay = getFirstDayOfMonth(currentMonth);
   const today = new Date();
   today.setHours(0, 0, 0, 0);
+
+  // Calculate statistics
+  const perfectDays = tasks.filter((t) => {
+    const status = getDayStatus(t);
+    return status.status === 'perfect';
+  }).length;
+
+  const goodDays = tasks.filter((t) => {
+    const status = getDayStatus(t);
+    return status.status === 'good';
+  }).length;
+
+  const totalSpending = tasks.reduce((sum, task) => {
+    return (
+      sum +
+      (task.spendings?.reduce((s, spending) => s + spending.amount, 0) || 0)
+    );
+  }, 0);
+
+  const totalDays = tasks.length;
+  const averageCompletion =
+    totalDays > 0
+      ? tasks.reduce((sum, task) => {
+          const { completed, total } = getTaskCompletion(task);
+          return sum + (total > 0 ? (completed / total) * 100 : 0);
+        }, 0) / totalDays
+      : 0;
 
   const calendarDays = [];
   // Add empty cells for days before the first day of month
@@ -305,20 +337,9 @@ export default function CalendarPage() {
 
   return (
     <div className='h-screen flex flex-col bg-background overflow-hidden'>
-      {/* Header */}
-      <header className='shrink-0 flex justify-end px-4 py-2 border-b bg-background'>
-        <Button
-          variant='ghost'
-          size='icon'
-          onClick={handleLogout}
-        >
-          <LogOut className='h-5 w-5' />
-        </Button>
-      </header>
-
       {/* Main Content */}
-      <main className='flex-1 overflow-y-auto pb-20'>
-        <div className='container mx-auto px-4 py-6 space-y-6 max-w-2xl'>
+      <main className='flex-1 overflow-y-auto pb-20 pt-16'>
+        <div className='container mx-auto px-4 py-6 space-y-6 max-w-4xl'>
           {/* Statistics */}
           <motion.div
             initial={{ opacity: 0, y: -20 }}
@@ -331,34 +352,34 @@ export default function CalendarPage() {
               </CardHeader>
               <CardContent>
                 <div className='grid grid-cols-2 gap-4'>
-                  <div className='text-center p-3 rounded-lg bg-secondary/20 border border-secondary'>
-                    <p className='text-3xl font-bold text-secondary'>
+                  <div className='text-center p-3 rounded-lg bg-yellow-400/20 border border-yellow-400'>
+                    <p className='text-3xl font-bold text-yellow-600'>
                       {perfectDays}
                     </p>
                     <p className='text-sm text-muted-foreground'>
-                      Perfekcyjne dni 🌟
+                      Perfekcyjne dni ⭐
+                    </p>
+                  </div>
+                  <div className='text-center p-3 rounded-lg bg-green-500/20 border border-green-500'>
+                    <p className='text-3xl font-bold text-green-600'>
+                      {goodDays}
+                    </p>
+                    <p className='text-sm text-muted-foreground'>Dobre dni ✓</p>
+                  </div>
+                  <div className='text-center p-3 rounded-lg bg-primary/20 border border-primary'>
+                    <p className='text-3xl font-bold text-primary'>
+                      {totalSpending.toFixed(2)} zł
+                    </p>
+                    <p className='text-sm text-muted-foreground'>
+                      Łączne wydatki
                     </p>
                   </div>
                   <div className='text-center p-3 rounded-lg bg-accent/20 border border-accent'>
                     <p className='text-3xl font-bold text-accent-foreground'>
-                      {goodDays}
+                      {averageCompletion.toFixed(0)}%
                     </p>
                     <p className='text-sm text-muted-foreground'>
-                      Dobre dni ✅
-                    </p>
-                  </div>
-                  <div className='text-center p-3 rounded-lg bg-muted/50 border'>
-                    <p className='text-3xl font-bold'>{partialDays}</p>
-                    <p className='text-sm text-muted-foreground'>
-                      Częściowe ⚠️
-                    </p>
-                  </div>
-                  <div className='text-center p-3 rounded-lg bg-destructive/10 border border-destructive/30'>
-                    <p className='text-3xl font-bold text-destructive'>
-                      {incompleteDays}
-                    </p>
-                    <p className='text-sm text-muted-foreground'>
-                      Nieukończone ❌
+                      Średnie wykonanie
                     </p>
                   </div>
                 </div>
@@ -390,7 +411,7 @@ export default function CalendarPage() {
             </div>
 
             {/* Day names */}
-            <div className='grid grid-cols-7 gap-2 text-center text-sm font-medium text-muted-foreground mb-2'>
+            <div className='grid grid-cols-7 gap-1.5 text-center text-xs font-medium text-muted-foreground mb-2'>
               <div>Nd</div>
               <div>Pn</div>
               <div>Wt</div>
@@ -400,10 +421,15 @@ export default function CalendarPage() {
               <div>Sb</div>
             </div>
 
-            <div className='grid grid-cols-7 gap-2'>
+            <div className='grid grid-cols-7 gap-1.5'>
               {calendarDays.map((day, index) => {
                 if (day === null) {
-                  return <div key={`empty-${index}`} />;
+                  return (
+                    <div
+                      key={`empty-${index}`}
+                      className='aspect-square'
+                    />
+                  );
                 }
 
                 const currentDate = new Date(
@@ -426,10 +452,16 @@ export default function CalendarPage() {
                   );
                 });
 
-                const status = task ? getDayStatus(task) : 'incomplete';
-                const { completed, total } = task
-                  ? getTaskCompletion(task)
-                  : { completed: 0, total: 5 };
+                const dayStatus = getDayStatus(task);
+                const statusStyles = isFuture
+                  ? {
+                      bg: 'bg-muted',
+                      icon: null as React.ElementType | null,
+                      iconColor: '',
+                      textColor: 'text-muted-foreground',
+                    }
+                  : getStatusStyles(dayStatus.status);
+                const Icon = statusStyles.icon;
 
                 return (
                   <motion.div
@@ -437,26 +469,26 @@ export default function CalendarPage() {
                     initial={{ opacity: 0, scale: 0.8 }}
                     animate={{ opacity: 1, scale: 1 }}
                     transition={{ delay: index * 0.01, duration: 0.2 }}
+                    className='aspect-square'
                   >
                     <Card
-                      className={`relative ${getStatusColor(status)} ${
+                      className={`relative ${statusStyles.bg} ${
                         isFuture ? 'opacity-40' : 'cursor-pointer'
                       } ${
-                        isToday ? 'ring-2 ring-primary' : ''
-                      } transition-all hover:scale-105`}
+                        isToday ? 'ring-2 ring-primary ring-offset-2' : ''
+                      } transition-all hover:scale-105 h-full border-0`}
                       onClick={() => !isFuture && handleDayClick(day)}
                     >
-                      <CardContent className='p-2 text-center'>
-                        <p className='text-lg font-bold mb-0.5'>{day}</p>
-                        {!isFuture && (
-                          <>
-                            <p className='text-2xl mb-0.5'>
-                              {getStatusEmoji(status)}
-                            </p>
-                            <p className='text-xs'>
-                              {completed}/{total}
-                            </p>
-                          </>
+                      <CardContent className='p-1.5 h-full flex flex-col items-center justify-center relative'>
+                        <p
+                          className={`text-sm font-bold ${statusStyles.textColor}`}
+                        >
+                          {day}
+                        </p>
+                        {!isFuture && Icon && (
+                          <Icon
+                            className={`absolute -top-6 right-0 h-3.5 w-3.5 ${statusStyles.iconColor}`}
+                          />
                         )}
                       </CardContent>
                     </Card>
@@ -465,37 +497,6 @@ export default function CalendarPage() {
               })}
             </div>
           </div>
-
-          {/* Legend */}
-          <Card>
-            <CardHeader>
-              <CardTitle className='text-lg'>Legenda</CardTitle>
-            </CardHeader>
-            <CardContent className='space-y-2'>
-              <div className='flex items-center gap-2'>
-                <span className='text-2xl'>🌟</span>
-                <span className='text-sm'>
-                  Perfekcyjne - Wszystkie zadania ukończone
-                </span>
-              </div>
-              <div className='flex items-center gap-2'>
-                <span className='text-2xl'>✅</span>
-                <span className='text-sm'>Dobre - 60%+ zadań ukończonych</span>
-              </div>
-              <div className='flex items-center gap-2'>
-                <span className='text-2xl'>⚠️</span>
-                <span className='text-sm'>
-                  Częściowe - Niektóre zadania ukończone
-                </span>
-              </div>
-              <div className='flex items-center gap-2'>
-                <span className='text-2xl'>❌</span>
-                <span className='text-sm'>
-                  Nieukończone - Brak ukończonych zadań
-                </span>
-              </div>
-            </CardContent>
-          </Card>
         </div>
       </main>
 
@@ -579,8 +580,9 @@ export default function CalendarPage() {
                       <p className='text-sm font-medium'>
                         Ukończono:{' '}
                         {
-                          selectedTask.taskCompletions.filter((c) => c.completed)
-                            .length
+                          selectedTask.taskCompletions.filter(
+                            (c) => c.completed,
+                          ).length
                         }{' '}
                         / {selectedTask.taskCompletions.length} zadań
                       </p>
@@ -648,42 +650,6 @@ export default function CalendarPage() {
           )}
         </DialogContent>
       </Dialog>
-
-      {/* Bottom Navigation */}
-      <nav className='fixed bottom-0 left-0 right-0 bg-card border-t shadow-lg'>
-        <div className='container mx-auto px-4'>
-          <div className='flex justify-around py-3'>
-            <Link
-              href='/dashboard'
-              className='flex flex-col items-center gap-1 text-muted-foreground hover:text-foreground'
-            >
-              <CheckSquare className='h-6 w-6' />
-              <span className='text-xs'>Zadania</span>
-            </Link>
-            <Link
-              href='/dashboard/spending'
-              className='flex flex-col items-center gap-1 text-muted-foreground hover:text-foreground'
-            >
-              <DollarSign className='h-6 w-6' />
-              <span className='text-xs'>Wydatki</span>
-            </Link>
-            <Link
-              href='/dashboard/diet'
-              className='flex flex-col items-center gap-1 text-muted-foreground hover:text-foreground'
-            >
-              <Salad className='h-6 w-6' />
-              <span className='text-xs'>Dieta</span>
-            </Link>
-            <Link
-              href='/dashboard/calendar'
-              className='flex flex-col items-center gap-1 text-primary'
-            >
-              <CalendarIcon className='h-6 w-6' />
-              <span className='text-xs font-medium'>Kalendarz</span>
-            </Link>
-          </div>
-        </div>
-      </nav>
     </div>
   );
 }

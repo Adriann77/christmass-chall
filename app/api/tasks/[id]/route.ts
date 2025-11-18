@@ -52,3 +52,45 @@ export async function PATCH(
     );
   }
 }
+
+export async function DELETE(
+  request: Request,
+  context: { params: Promise<{ id: string }> },
+) {
+  try {
+    const cookieStore = await cookies();
+    const sessionCookie = cookieStore.get('session');
+
+    if (!sessionCookie) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    const session = JSON.parse(sessionCookie.value);
+    const { id } = await context.params;
+
+    // Find the daily task and verify ownership
+    const dailyTask = await prisma.dailyTask.findUnique({
+      where: { id },
+    });
+
+    if (!dailyTask || dailyTask.userId !== session.userId) {
+      return NextResponse.json(
+        { error: 'Task not found or unauthorized' },
+        { status: 404 },
+      );
+    }
+
+    // Delete the daily task (cascade will delete related data)
+    await prisma.dailyTask.delete({
+      where: { id },
+    });
+
+    return NextResponse.json({ message: 'Daily task deleted successfully' });
+  } catch (error) {
+    console.error('Error deleting daily task:', error);
+    return NextResponse.json(
+      { error: 'Failed to delete daily task' },
+      { status: 500 },
+    );
+  }
+}

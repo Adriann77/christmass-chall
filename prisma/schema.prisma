@@ -1,12 +1,28 @@
 // This is your Prisma schema file,
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
+// 🔄 HOW TO SWITCH BETWEEN DEVELOPMENT AND PRODUCTION:
+//
+// DEVELOPMENT (SQLite):
+// Set in .env: DATABASE_URL="file:./dev.db"
+// provider = "sqlite"
+//
+// PRODUCTION (PostgreSQL):
+// Set in .env: DATABASE_URL="postgresql://user:password@host:5432/database"
+// provider = "postgresql"
+//
+// Commands after switching:
+// 1. pnpm prisma:generate    # Regenerate client
+// 2. pnpm db:push            # Push schema changes (or pnpm db:migrate)
+//
+// 💡 TIP: Just change the DATABASE_URL in .env, the provider above, and regenerate!
+
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "sqlite" // Change to "postgresql" for production
   url      = env("DATABASE_URL")
 }
 

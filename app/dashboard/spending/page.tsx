@@ -14,15 +14,7 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog';
 import { motion } from 'framer-motion';
-import {
-  Calendar,
-  CheckSquare,
-  DollarSign,
-  LogOut,
-  Plus,
-  Salad,
-} from 'lucide-react';
-import Link from 'next/link';
+import { DollarSign, Plus } from 'lucide-react';
 
 interface Spending {
   id: string;
@@ -87,10 +79,6 @@ export default function SpendingPage() {
     setLoading(false);
   };
 
-  const handleLogout = async () => {
-    await fetch('/api/auth/logout', { method: 'POST' });
-    router.push('/login');
-  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -141,19 +129,8 @@ export default function SpendingPage() {
 
   return (
     <div className='h-screen flex flex-col bg-background overflow-hidden'>
-      {/* Header */}
-      <header className='shrink-0 flex justify-end px-4 py-2 border-b bg-background'>
-        <Button
-          variant='ghost'
-          size='icon'
-          onClick={handleLogout}
-        >
-          <LogOut className='h-5 w-5' />
-        </Button>
-      </header>
-
       {/* Main Content */}
-      <main className='flex-1 overflow-y-auto pb-20'>
+      <main className='flex-1 overflow-y-auto pb-20 pt-16'>
         <div className='container mx-auto px-4 py-6 space-y-6 max-w-2xl'>
           {/* Total Spending */}
           <motion.div
@@ -301,42 +278,6 @@ export default function SpendingPage() {
           </div>
         </div>
       </main>
-
-      {/* Bottom Navigation */}
-      <nav className='fixed bottom-0 left-0 right-0 bg-card border-t shadow-lg'>
-        <div className='container mx-auto px-4'>
-          <div className='flex justify-around py-3'>
-            <Link
-              href='/dashboard'
-              className='flex flex-col items-center gap-1 text-muted-foreground hover:text-foreground'
-            >
-              <CheckSquare className='h-6 w-6' />
-              <span className='text-xs'>Zadania</span>
-            </Link>
-            <Link
-              href='/dashboard/spending'
-              className='flex flex-col items-center gap-1 text-primary'
-            >
-              <DollarSign className='h-6 w-6' />
-              <span className='text-xs font-medium'>Wydatki</span>
-            </Link>
-            <Link
-              href='/dashboard/diet'
-              className='flex flex-col items-center gap-1 text-muted-foreground hover:text-foreground'
-            >
-              <Salad className='h-6 w-6' />
-              <span className='text-xs'>Dieta</span>
-            </Link>
-            <Link
-              href='/dashboard/calendar'
-              className='flex flex-col items-center gap-1 text-muted-foreground hover:text-foreground'
-            >
-              <Calendar className='h-6 w-6' />
-              <span className='text-xs'>Kalendarz</span>
-            </Link>
-          </div>
-        </div>
-      </nav>
     </div>
   );
 }
