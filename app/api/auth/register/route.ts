@@ -30,6 +30,7 @@ export async function POST(request: Request) {
     const result = await registerUser(username, password, name);
 
     if (!result.success) {
+      console.error('Registration failed:', result.error);
       return NextResponse.json({ error: result.error }, { status: 400 });
     }
 
@@ -45,8 +46,19 @@ export async function POST(request: Request) {
     return NextResponse.json({ user: result.user });
   } catch (error) {
     console.error('Registration error:', error);
+    // Log more details about the error
+    if (error instanceof Error) {
+      console.error('Error message:', error.message);
+      console.error('Error stack:', error.stack);
+    }
     return NextResponse.json(
-      { error: 'Internal server error' },
+      { 
+        error: 'Internal server error',
+        // Include error details in development
+        ...(process.env.NODE_ENV === 'development' && error instanceof Error && {
+          details: error.message
+        })
+      },
       { status: 500 },
     );
   }

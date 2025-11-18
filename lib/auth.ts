@@ -99,6 +99,19 @@ export async function registerUser(
     };
   } catch (error) {
     console.error('Registration error:', error);
+    // Log more details about database errors
+    if (error instanceof Error) {
+      console.error('Error message:', error.message);
+      console.error('Error name:', error.name);
+      // Check for common Prisma errors
+      if (error.message.includes('P2002')) {
+        return { success: false, error: 'Username already exists' };
+      }
+      if (error.message.includes('connect') || error.message.includes('connection')) {
+        console.error('Database connection error detected');
+        return { success: false, error: 'Database connection failed. Please check your database configuration.' };
+      }
+    }
     return { success: false, error: 'Failed to create account' };
   }
 }
