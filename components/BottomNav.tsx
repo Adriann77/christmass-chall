@@ -2,7 +2,8 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { CheckSquare, DollarSign, Salad, Calendar } from 'lucide-react';
+import { CheckSquare, DollarSign, Salad, Calendar, Settings } from 'lucide-react';
+import ExpenseModal from './ExpenseModal';
 
 export default function BottomNav() {
   const pathname = usePathname();
@@ -15,9 +16,9 @@ export default function BottomNav() {
   const isActive = (path: string) => pathname === path;
 
   return (
-    <nav className='fixed bottom-0 left-0 right-0 bg-card border-t shadow-lg z-50'>
+    <nav className='fixed bottom-0 left-0 right-0 bg-card border-t shadow-lg z-50 pb-safe'>
       <div className='container mx-auto px-4'>
-        <div className='flex justify-around py-3'>
+        <div className='flex justify-around py-3 items-center'>
           <Link
             href='/dashboard'
             className={`flex flex-col items-center gap-1 transition-colors ${
@@ -29,38 +30,40 @@ export default function BottomNav() {
             <CheckSquare className='h-6 w-6' />
             <span className='text-xs font-medium'>Zadania</span>
           </Link>
+          
+          <ExpenseModal 
+            trigger={
+              <button
+                className={`flex flex-col items-center gap-1 transition-colors text-muted-foreground hover:text-foreground`}
+              >
+                <DollarSign className='h-6 w-6' />
+                <span className='text-xs'>Dodaj wydatek</span>
+              </button>
+            }
+          />
+
           <Link
-            href='/dashboard/spending'
+            href='/dashboard/settings/tasks'
             className={`flex flex-col items-center gap-1 transition-colors ${
-              isActive('/dashboard/spending')
+              isActive('/dashboard/settings/tasks')
                 ? 'text-primary'
                 : 'text-muted-foreground hover:text-foreground'
             }`}
           >
-            <DollarSign className='h-6 w-6' />
-            <span className='text-xs'>Wydatki</span>
+            <Settings className='h-6 w-6' />
+            <span className='text-xs'>Zarządzaj</span>
           </Link>
+
           <Link
-            href='/dashboard/diet'
+            href='/dashboard/summary'
             className={`flex flex-col items-center gap-1 transition-colors ${
-              pathname?.startsWith('/dashboard/diet')
-                ? 'text-primary'
-                : 'text-muted-foreground hover:text-foreground'
-            }`}
-          >
-            <Salad className='h-6 w-6' />
-            <span className='text-xs'>Dieta</span>
-          </Link>
-          <Link
-            href='/dashboard/calendar'
-            className={`flex flex-col items-center gap-1 transition-colors ${
-              isActive('/dashboard/calendar')
+              isActive('/dashboard/summary')
                 ? 'text-primary'
                 : 'text-muted-foreground hover:text-foreground'
             }`}
           >
             <Calendar className='h-6 w-6' />
-            <span className='text-xs'>Kalendarz</span>
+            <span className='text-xs'>Podsumowanie</span>
           </Link>
         </div>
       </div>

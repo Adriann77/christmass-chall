@@ -4,6 +4,7 @@ import './globals.css';
 import Providers from '@/components/Providers';
 import BottomNav from '@/components/BottomNav';
 import TopNav from '@/components/TopNav';
+import { Toaster } from 'sonner';
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -61,6 +62,7 @@ export default function RootLayout({
           <TopNav />
           {children}
           <BottomNav />
+          <Toaster />
         </Providers>
       </body>
     </html>

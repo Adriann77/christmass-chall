@@ -303,50 +303,114 @@ export default function TaskTemplatesPage() {
               </Button>
             </Card>
           ) : (
-            templates.map((template) => {
-              const Icon = getIconComponent(template.icon);
-              return (
-                <Card
-                  key={template.id}
-                  className='p-4'
-                >
-                  <div className='flex items-center justify-between'>
-                    <div className='flex items-center gap-3'>
-                      <div
-                        className={`p-2 rounded-full ${
-                          template.isActive
-                            ? 'bg-red-100 text-red-600'
-                            : 'bg-gray-100 text-gray-400'
-                        }`}
-                      >
-                        <Icon className='h-5 w-5' />
-                      </div>
-                      <div>
-                        <h3 className='font-semibold'>{template.name}</h3>
-                      </div>
-                    </div>
 
-                    <div className='flex gap-2'>
-                      <Button
-                        variant='ghost'
-                        size='icon'
-                        onClick={() => handleEdit(template)}
-                      >
-                        <Pencil className='h-4 w-4' />
-                      </Button>
-                      <Button
-                        variant='ghost'
-                        size='icon'
-                        onClick={() => handleDelete(template.id)}
-                        className='text-red-600 hover:text-red-700 hover:bg-red-50'
-                      >
-                        <Trash2 className='h-4 w-4' />
-                      </Button>
+            templates
+              .sort((a, b) => a.sortOrder - b.sortOrder)
+              .map((template, index) => {
+                const Icon = getIconComponent(template.icon);
+                const isFirst = index === 0;
+                const isLast = index === templates.length - 1;
+
+                const handleMove = async (direction: 'up' | 'down') => {
+                  const newTemplates = [...templates];
+                  const currentIndex = index;
+                  const targetIndex =
+                    direction === 'up' ? currentIndex - 1 : currentIndex + 1;
+
+                  if (targetIndex < 0 || targetIndex >= newTemplates.length)
+                    return;
+
+                  // Swap sortOrder
+                  const tempOrder = newTemplates[currentIndex].sortOrder;
+                  newTemplates[currentIndex].sortOrder =
+                    newTemplates[targetIndex].sortOrder;
+                  newTemplates[targetIndex].sortOrder = tempOrder;
+
+                  // Sort array to reflect new order
+                  newTemplates.sort((a, b) => a.sortOrder - b.sortOrder);
+                  setTemplates(newTemplates);
+
+                  // Save to server
+                  try {
+                    await fetch('/api/task-templates/reorder', {
+                      method: 'POST',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify({
+                        items: newTemplates.map((t) => ({
+                          id: t.id,
+                          sortOrder: t.sortOrder,
+                        })),
+                      }),
+                    });
+                  } catch (error) {
+                    console.error('Error saving order:', error);
+                    // Revert on error (optional, but good UX)
+                    fetchTemplates();
+                  }
+                };
+
+                return (
+                  <Card
+                    key={template.id}
+                    className='p-4'
+                  >
+                    <div className='flex items-center justify-between'>
+                      <div className='flex items-center gap-3'>
+                        <div className='flex flex-col gap-1 mr-2'>
+                          <Button
+                            variant='ghost'
+                            size='icon'
+                            className='h-6 w-6'
+                            disabled={isFirst}
+                            onClick={() => handleMove('up')}
+                          >
+                            <ArrowLeft className='h-4 w-4 rotate-90' />
+                          </Button>
+                          <Button
+                            variant='ghost'
+                            size='icon'
+                            className='h-6 w-6'
+                            disabled={isLast}
+                            onClick={() => handleMove('down')}
+                          >
+                            <ArrowLeft className='h-4 w-4 -rotate-90' />
+                          </Button>
+                        </div>
+                        <div
+                          className={`p-2 rounded-full ${
+                            template.isActive
+                              ? 'bg-red-100 text-red-600'
+                              : 'bg-gray-100 text-gray-400'
+                          }`}
+                        >
+                          <Icon className='h-5 w-5' />
+                        </div>
+                        <div>
+                          <h3 className='font-semibold'>{template.name}</h3>
+                        </div>
+                      </div>
+
+                      <div className='flex gap-2'>
+                        <Button
+                          variant='ghost'
+                          size='icon'
+                          onClick={() => handleEdit(template)}
+                        >
+                          <Pencil className='h-4 w-4' />
+                        </Button>
+                        <Button
+                          variant='ghost'
+                          size='icon'
+                          onClick={() => handleDelete(template.id)}
+                          className='text-red-600 hover:text-red-700 hover:bg-red-50'
+                        >
+                          <Trash2 className='h-4 w-4' />
+                        </Button>
+                      </div>
                     </div>
-                  </div>
-                </Card>
-              );
-            })
+                  </Card>
+                );
+              })
           )}
         </div>
       </main>
