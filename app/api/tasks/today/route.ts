@@ -38,6 +38,7 @@ export async function GET(request: Request) {
         },
       },
       include: {
+        spendings: true,
         taskCompletions: {
           include: {
             taskTemplate: true,
@@ -59,6 +60,7 @@ export async function GET(request: Request) {
           date: currentDate,
         },
         include: {
+          spendings: true,
           taskCompletions: {
             include: {
               taskTemplate: true,
@@ -104,6 +106,7 @@ export async function GET(request: Request) {
       dailyTask = await prisma.dailyTask.findUnique({
         where: { id: dailyTask.id },
         include: {
+          spendings: true,
           taskCompletions: {
             include: {
               taskTemplate: true,

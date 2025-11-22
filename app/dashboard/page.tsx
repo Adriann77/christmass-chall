@@ -200,7 +200,7 @@ export default function DashboardPage() {
               variant="outline" 
               size="icon" 
               onClick={() => changeDate(1)}
-              // disabled={selectedDateObj >= today} // Removed disable to allow future planning if needed
+              disabled={selectedDateObj >= today}
             >
               <ChevronRight className="h-5 w-5" />
             </Button>

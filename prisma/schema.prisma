@@ -22,7 +22,7 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite" // PostgreSQL for production (Vercel)
+  provider = "postgresql" // PostgreSQL for production (Vercel)
   url      = env("DATABASE_URL")
 }
 

@@ -22,12 +22,15 @@ export async function GET(request: Request) {
   const dateParam = searchParams.get('date');
 
   if (!dateParam) {
-    return NextResponse.json({ error: 'Date parameter is required' }, { status: 400 });
+    return NextResponse.json(
+      { error: 'Date parameter is required' },
+      { status: 400 },
+    );
   }
 
   try {
     const date = new Date(dateParam);
-    
+
     const task = await prisma.dailyTask.findUnique({
       where: {
         userId_date: {
@@ -36,7 +39,11 @@ export async function GET(request: Request) {
         },
       },
       include: {
-        taskCompletions: true,
+        taskCompletions: {
+          include: {
+            taskTemplate: true,
+          },
+        },
         spendings: true,
       },
     });
@@ -50,7 +57,7 @@ export async function GET(request: Request) {
     console.error('Error fetching task by date:', error);
     return NextResponse.json(
       { error: 'Failed to fetch task' },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
