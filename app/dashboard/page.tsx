@@ -1,13 +1,12 @@
 'use client';
 
-import { useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useState, useEffect } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
-  CardTitle,
 } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Button } from '@/components/ui/button';
@@ -36,11 +35,13 @@ import {
   Bike,
   Loader2,
   Plus,
+  ChevronLeft,
+  ChevronRight,
 } from 'lucide-react';
 import Link from 'next/link';
 import {
   useUser,
-  useTodayTask,
+  useDailyTask,
   useToggleTaskCompletion,
 } from '@/lib/hooks/useTasks';
 
@@ -67,10 +68,19 @@ const ICON_MAP: Record<string, React.ElementType> = {
   Bike,
 };
 
-export default function DashboardPage() {
+import { Suspense } from 'react';
+
+function DashboardContent() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { data: userData, isLoading: isLoadingUser } = useUser();
-  const { data: taskData, isLoading: isLoadingTask } = useTodayTask();
+
+  // Get date from URL or default to today
+  const dateParam = searchParams.get('date');
+  const selectedDate = dateParam ? new Date(dateParam) : new Date();
+
+  const { data: taskData, isLoading: isLoadingTask } =
+    useDailyTask(selectedDate);
   const toggleTask = useToggleTaskCompletion();
 
   const user = userData?.user;
@@ -85,6 +95,19 @@ export default function DashboardPage() {
 
   const handleTaskToggle = (completionId: string, currentValue: boolean) => {
     toggleTask.mutate({ completionId, completed: !currentValue });
+  };
+
+  const changeDate = (days: number) => {
+    const newDate = new Date(selectedDate);
+    newDate.setDate(newDate.getDate() + days);
+    const formattedDate = newDate.toISOString().split('T')[0];
+    router.push(`/dashboard?date=${formattedDate}`);
+  };
+
+  const resetDate = () => {
+    const now = new Date();
+    const formattedDate = now.toISOString().split('T')[0];
+    router.push(`/dashboard?date=${formattedDate}`);
   };
 
   if (isLoadingUser || isLoadingTask || !user) {
@@ -102,8 +125,8 @@ export default function DashboardPage() {
   }
 
   const now = new Date();
-  const currentDay = now.getDate();
-  const currentMonth = now.getMonth();
+  const currentDay = selectedDate.getDate();
+  const currentMonth = selectedDate.getMonth();
 
   // Calculate days since challenge start
   const challengeStart = new Date(user.challengeStartDate);
@@ -111,9 +134,13 @@ export default function DashboardPage() {
   const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
   today.setHours(0, 0, 0, 0);
 
+  const selectedDateObj = new Date(selectedDate);
+  selectedDateObj.setHours(0, 0, 0, 0);
+
   const daysSinceStart =
     Math.floor(
-      (today.getTime() - challengeStart.getTime()) / (1000 * 60 * 60 * 24),
+      (selectedDateObj.getTime() - challengeStart.getTime()) /
+        (1000 * 60 * 60 * 24),
     ) + 1; // +1 because day 1 is the start date
 
   const challengeEndDate = new Date(challengeStart);
@@ -122,7 +149,8 @@ export default function DashboardPage() {
   const daysRemaining = Math.max(
     0,
     Math.ceil(
-      (challengeEndDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24),
+      (challengeEndDate.getTime() - selectedDateObj.getTime()) /
+        (1000 * 60 * 60 * 24),
     ),
   );
 
@@ -141,9 +169,10 @@ export default function DashboardPage() {
     'grudnia',
   ];
   const currentDateStr = `${currentDay} ${monthNames[currentMonth]}`;
+  const isToday = selectedDateObj.getTime() === today.getTime();
 
   const completions = dailyTask?.taskCompletions || [];
-  const completedTasks = completions.filter((c) => c.completed).length;
+  const completedTasks = completions.filter((c: any) => c.completed).length;
   const totalTasks = completions.length;
   const progress = totalTasks > 0 ? (completedTasks / totalTasks) * 100 : 0;
 
@@ -152,17 +181,48 @@ export default function DashboardPage() {
       {/* Main Content */}
       <main className='flex-1 overflow-y-auto pb-20 pt-10'>
         <div className='container mx-auto px-4 py-6 space-y-6 max-w-2xl'>
+          {/* Date Navigation */}
+          <div className='flex items-center justify-between mb-4'>
+            <Button
+              variant='outline'
+              size='icon'
+              onClick={() => changeDate(-1)}
+            >
+              <ChevronLeft className='h-5 w-5' />
+            </Button>
+
+            <div className='flex flex-col items-center'>
+              <h2 className='font-bold text-lg'>{currentDateStr}</h2>
+              {!isToday && (
+                <Button
+                  variant='ghost'
+                  size='sm'
+                  onClick={resetDate}
+                  className='h-6 text-xs text-primary'
+                >
+                  Wróć do dzisiaj
+                </Button>
+              )}
+            </div>
+
+            <Button
+              variant='outline'
+              size='icon'
+              onClick={() => changeDate(1)}
+              disabled={selectedDateObj >= today}
+            >
+              <ChevronRight className='h-5 w-5' />
+            </Button>
+          </div>
+
           {/* Day Counter */}
           <motion.div
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
           >
-            <Card className='bg-secondary text-secondary-foreground border-2'>
-              <CardHeader className='pb-3'>
-                <CardTitle className='text-center text-2xl'>
-                  {currentDateStr}
-                </CardTitle>
+            <Card className='bg-primary/90 text-secondary-foreground '>
+              <CardHeader className=''>
                 <CardDescription className='text-center text-secondary-foreground/80'>
                   {daysRemaining <= 0
                     ? 'Wyzwanie ukończone! 🎉🎄'
@@ -188,12 +248,12 @@ export default function DashboardPage() {
               <CardContent>
                 <div className='space-y-2'>
                   <div className='flex justify-between text-sm'>
-                    <span>
+                    <span className='text-center self-center '>
                       {completedTasks} z {totalTasks} zadań ukończonych
                     </span>
                     <span className='font-bold'>{Math.round(progress)}%</span>
                   </div>
-                  <div className='w-full bg-muted rounded-full h-3 overflow-hidden'>
+                  <div className='w-full bg-muted rounded-full h-2 overflow-hidden'>
                     <motion.div
                       initial={{ width: 0 }}
                       animate={{ width: `${progress}%` }}
@@ -208,7 +268,6 @@ export default function DashboardPage() {
 
           {/* Daily Tasks */}
           <div className='space-y-3'>
-            <h2 className='text-xl font-bold px-1'>Dzisiejsze zadania</h2>
             {completions.length === 0 ? (
               <Card className='p-6 text-center'>
                 <p className='text-muted-foreground mb-4'>
@@ -222,10 +281,10 @@ export default function DashboardPage() {
               <>
                 {completions
                   .sort(
-                    (a, b) =>
+                    (a: any, b: any) =>
                       a.taskTemplate.sortOrder - b.taskTemplate.sortOrder,
                   )
-                  .map((completion, index) => {
+                  .map((completion: any, index: number) => {
                     const Icon =
                       ICON_MAP[completion.taskTemplate.icon] || CheckSquare;
                     const isCompleted = completion.completed;
@@ -241,15 +300,15 @@ export default function DashboardPage() {
                         transition={{ delay: 0.2 + index * 0.1, duration: 0.5 }}
                       >
                         <Card
-                          className={`cursor-pointer transition-all hover:shadow-lg ${
-                            isCompleted ? 'bg-accent border-primary' : ''
+                          className={` transition-all  ${
+                            isCompleted ? 'bg-green-500 ' : ''
                           } ${isPending ? 'opacity-60' : ''}`}
                           onClick={() =>
                             !isPending &&
                             handleTaskToggle(completion.id, isCompleted)
                           }
                         >
-                          <CardContent className='flex items-center gap-4 p-4'>
+                          <CardContent className='flex items-center gap-4 p-1 px-6'>
                             {isPending ? (
                               <Loader2 className='h-6 w-6 animate-spin text-primary' />
                             ) : (
@@ -259,65 +318,51 @@ export default function DashboardPage() {
                                   handleTaskToggle(completion.id, isCompleted)
                                 }
                                 className='h-6 w-6'
+                                onClick={(e) => e.stopPropagation()}
                               />
                             )}
                             <Icon
                               className={`h-6 w-6 ${
-                                isCompleted
-                                  ? 'text-primary'
-                                  : 'text-muted-foreground'
+                                isCompleted ? 'text-primary' : 'text-success'
                               }`}
                             />
                             <span
                               className={`flex-1 font-medium ${
-                                isCompleted
-                                  ? 'line-through text-muted-foreground'
-                                  : ''
+                                isCompleted ? 'line-through text-success' : ''
                               }`}
                             >
                               {completion.taskTemplate.name}
                             </span>
-                            {isCompleted && (
-                              <span className='text-2xl'>✅</span>
-                            )}
                           </CardContent>
                         </Card>
                       </motion.div>
                     );
                   })}
-                {/* Add Task Card - at the bottom of the list */}
-                <motion.div
-                  initial={{ opacity: 0, y: -20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{
-                    delay: 0.2 + completions.length * 0.1,
-                    duration: 0.5,
-                  }}
-                >
-                  <Link href='/dashboard/settings/tasks'>
-                    <Card className='cursor-pointer transition-all hover:shadow-lg hover:scale-[1.02] border-2 hover:border-primary bg-gradient-to-br from-primary/5 to-secondary/5'>
-                      <CardContent className='flex items-center gap-4 p-4'>
-                        <div className='p-3 rounded-full bg-primary/10'>
-                          <Plus className='h-6 w-6 text-primary' />
-                        </div>
-                        <div className='flex-1'>
-                          <h3 className='font-semibold text-lg'>
-                            Dodaj zadanie dzienne
-                          </h3>
-                          <p className='text-sm text-muted-foreground'>
-                            Zarządzaj swoimi codziennymi zadaniami
-                          </p>
-                        </div>
-                        <Settings className='h-5 w-5 text-muted-foreground' />
-                      </CardContent>
-                    </Card>
-                  </Link>
-                </motion.div>
               </>
             )}
           </div>
         </div>
       </main>
     </div>
+  );
+}
+
+export default function DashboardPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className='min-h-screen flex items-center justify-center'>
+          <motion.div
+            animate={{ rotate: 360 }}
+            transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
+            className='text-6xl'
+          >
+            🎄
+          </motion.div>
+        </div>
+      }
+    >
+      <DashboardContent />
+    </Suspense>
   );
 }

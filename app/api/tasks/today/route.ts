@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
 import { prisma } from '@/lib/prisma';
 
-export async function GET() {
+export async function GET(request: Request) {
   try {
     const cookieStore = await cookies();
     const sessionCookie = cookieStore.get('session');
@@ -13,13 +13,21 @@ export async function GET() {
 
     const session = JSON.parse(sessionCookie.value);
 
-    // Get current date - use actual date for the challenge
-    const now = new Date();
-    const currentDate = new Date(
-      now.getFullYear(),
-      now.getMonth(),
-      now.getDate(),
-    );
+    // Get date from query params or use current date
+    const { searchParams } = new URL(request.url);
+    const dateParam = searchParams.get('date');
+
+    let currentDate: Date;
+    if (dateParam) {
+      currentDate = new Date(dateParam);
+    } else {
+      const now = new Date();
+      currentDate = new Date(
+        now.getFullYear(),
+        now.getMonth(),
+        now.getDate(),
+      );
+    }
     currentDate.setHours(0, 0, 0, 0);
 
     let dailyTask = await prisma.dailyTask.findUnique({
@@ -86,15 +94,13 @@ export async function GET() {
 
     // Create task completions for missing templates
     if (missingTemplates.length > 0) {
-      for (const template of missingTemplates) {
-        await prisma.taskCompletion.create({
-          data: {
-            dailyTaskId: dailyTask.id,
-            taskTemplateId: template.id,
-            completed: false,
-          },
-        });
-      }
+      await prisma.taskCompletion.createMany({
+        data: missingTemplates.map((template) => ({
+          dailyTaskId: dailyTask!.id,
+          taskTemplateId: template.id,
+          completed: false,
+        })),
+      });
 
       // Refetch with all completions
       dailyTask = await prisma.dailyTask.findUnique({
