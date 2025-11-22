@@ -68,16 +68,19 @@ const ICON_MAP: Record<string, React.ElementType> = {
   Bike,
 };
 
-export default function DashboardPage() {
+import { Suspense } from 'react';
+
+function DashboardContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { data: userData, isLoading: isLoadingUser } = useUser();
-  
+
   // Get date from URL or default to today
   const dateParam = searchParams.get('date');
   const selectedDate = dateParam ? new Date(dateParam) : new Date();
-  
-  const { data: taskData, isLoading: isLoadingTask } = useDailyTask(selectedDate);
+
+  const { data: taskData, isLoading: isLoadingTask } =
+    useDailyTask(selectedDate);
   const toggleTask = useToggleTaskCompletion();
 
   const user = userData?.user;
@@ -130,13 +133,14 @@ export default function DashboardPage() {
   challengeStart.setHours(0, 0, 0, 0);
   const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
   today.setHours(0, 0, 0, 0);
-  
+
   const selectedDateObj = new Date(selectedDate);
   selectedDateObj.setHours(0, 0, 0, 0);
 
   const daysSinceStart =
     Math.floor(
-      (selectedDateObj.getTime() - challengeStart.getTime()) / (1000 * 60 * 60 * 24),
+      (selectedDateObj.getTime() - challengeStart.getTime()) /
+        (1000 * 60 * 60 * 24),
     ) + 1; // +1 because day 1 is the start date
 
   const challengeEndDate = new Date(challengeStart);
@@ -145,7 +149,8 @@ export default function DashboardPage() {
   const daysRemaining = Math.max(
     0,
     Math.ceil(
-      (challengeEndDate.getTime() - selectedDateObj.getTime()) / (1000 * 60 * 60 * 24),
+      (challengeEndDate.getTime() - selectedDateObj.getTime()) /
+        (1000 * 60 * 60 * 24),
     ),
   );
 
@@ -178,31 +183,35 @@ export default function DashboardPage() {
         <div className='container mx-auto px-4 py-6 space-y-6 max-w-2xl'>
           {/* Date Navigation */}
           <div className='flex items-center justify-between mb-4'>
-            <Button variant="outline" size="icon" onClick={() => changeDate(-1)}>
-              <ChevronLeft className="h-5 w-5" />
+            <Button
+              variant='outline'
+              size='icon'
+              onClick={() => changeDate(-1)}
+            >
+              <ChevronLeft className='h-5 w-5' />
             </Button>
-            
-            <div className="flex flex-col items-center">
-              <h2 className="font-bold text-lg">{currentDateStr}</h2>
+
+            <div className='flex flex-col items-center'>
+              <h2 className='font-bold text-lg'>{currentDateStr}</h2>
               {!isToday && (
-                <Button 
-                  variant="ghost" 
-                  size="sm" 
+                <Button
+                  variant='ghost'
+                  size='sm'
                   onClick={resetDate}
-                  className="h-6 text-xs text-primary"
+                  className='h-6 text-xs text-primary'
                 >
                   Wróć do dzisiaj
                 </Button>
               )}
             </div>
 
-            <Button 
-              variant="outline" 
-              size="icon" 
+            <Button
+              variant='outline'
+              size='icon'
               onClick={() => changeDate(1)}
               disabled={selectedDateObj >= today}
             >
-              <ChevronRight className="h-5 w-5" />
+              <ChevronRight className='h-5 w-5' />
             </Button>
           </div>
 
@@ -259,7 +268,6 @@ export default function DashboardPage() {
 
           {/* Daily Tasks */}
           <div className='space-y-3'>
-
             {completions.length === 0 ? (
               <Card className='p-6 text-center'>
                 <p className='text-muted-foreground mb-4'>
@@ -315,16 +323,12 @@ export default function DashboardPage() {
                             )}
                             <Icon
                               className={`h-6 w-6 ${
-                                isCompleted
-                                  ? 'text-primary'
-                                  : 'text-success'
+                                isCompleted ? 'text-primary' : 'text-success'
                               }`}
                             />
                             <span
                               className={`flex-1 font-medium ${
-                                isCompleted
-                                  ? 'line-through text-success'
-                                  : ''
+                                isCompleted ? 'line-through text-success' : ''
                               }`}
                             >
                               {completion.taskTemplate.name}
@@ -340,5 +344,25 @@ export default function DashboardPage() {
         </div>
       </main>
     </div>
+  );
+}
+
+export default function DashboardPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className='min-h-screen flex items-center justify-center'>
+          <motion.div
+            animate={{ rotate: 360 }}
+            transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
+            className='text-6xl'
+          >
+            🎄
+          </motion.div>
+        </div>
+      }
+    >
+      <DashboardContent />
+    </Suspense>
   );
 }
