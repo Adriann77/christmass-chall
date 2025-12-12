@@ -22,13 +22,13 @@ export async function POST(request: Request) {
       );
     }
 
-    // Set session cookie
+    // Set session cookie (never expires - 10 years)
     const cookieStore = await cookies();
     cookieStore.set('session', JSON.stringify({ userId: user.id }), {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax',
-      maxAge: 60 * 60 * 24 * 7, // 1 week
+      maxAge: 60 * 60 * 24 * 365 * 10, // 10 years (effectively never expires)
     });
 
     return NextResponse.json({ user });

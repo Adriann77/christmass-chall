@@ -11,7 +11,6 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
-import { motion, AnimatePresence } from 'framer-motion';
 import {
   CheckSquare,
   DollarSign,
@@ -34,21 +33,18 @@ import {
   Camera,
   Pill,
   Bike,
-  CheckCircle2,
-  AlertCircle,
-  XCircle,
   Pencil,
   Trash2,
   Loader2,
-  Flame,
   Percent,
+  Calendar as CalendarIcon,
+  X,
 } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Calendar, CalendarDayButton } from '@/components/ui/calendar';
 import { pl } from 'date-fns/locale';
-import { cn } from '@/lib/utils';
-import { isSameDay, parseISO, format } from 'date-fns';
+import { isSameDay, parseISO, format, isWithinInterval } from 'date-fns';
 
 interface Spending {
   id: string;
@@ -110,10 +106,15 @@ const ICON_MAP: Record<string, React.ElementType> = {
 
 export default function SummaryPage() {
   const [tasks, setTasks] = useState<DailyTask[]>([]);
-  const [loading, setLoading] = useState(true);
   const [currentMonth, setCurrentMonth] = useState<Date>(new Date());
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
   const [selectedTask, setSelectedTask] = useState<DailyTask | null>(null);
+
+  // Filter states
+  const [dateRangeStart, setDateRangeStart] = useState<Date | undefined>(undefined);
+  const [dateRangeEnd, setDateRangeEnd] = useState<Date | undefined>(undefined);
+  const [selectedTaskFilter, setSelectedTaskFilter] = useState<string>('');
+  const [availableTasks, setAvailableTasks] = useState<TaskTemplate[]>([]);
 
   const [editingSpending, setEditingSpending] = useState<Spending | null>(null);
   const [spendingForm, setSpendingForm] = useState({
@@ -122,21 +123,28 @@ export default function SummaryPage() {
     description: '',
   });
   const [togglingTask, setTogglingTask] = useState<string | null>(null);
-  const [deletingSpending, setDeletingSpending] = useState<string | null>(null);
   const router = useRouter();
 
   const fetchCalendarData = async (month: number, year: number) => {
-    setLoading(true);
     try {
       const calendarResponse = await fetch(
         `/api/calendar?month=${month}&year=${year}`,
       );
       const calendarData = await calendarResponse.json();
       setTasks(calendarData.tasks || []);
+      
+      // Extract unique task templates
+      const templates = new Map<string, TaskTemplate>();
+      calendarData.tasks?.forEach((task: DailyTask) => {
+        task.taskCompletions?.forEach((completion) => {
+          if (!templates.has(completion.taskTemplate.id)) {
+            templates.set(completion.taskTemplate.id, completion.taskTemplate);
+          }
+        });
+      });
+      setAvailableTasks(Array.from(templates.values()).sort((a, b) => a.sortOrder - b.sortOrder));
     } catch (error) {
       console.error('Failed to fetch calendar data', error);
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -281,7 +289,6 @@ export default function SummaryPage() {
   const handleDeleteSpending = async (spendingId: string) => {
     if (!confirm('Czy na pewno chcesz usunąć ten wydatek?')) return;
 
-    setDeletingSpending(spendingId);
     try {
       const response = await fetch(`/api/spendings/${spendingId}`, {
         method: 'DELETE',
@@ -296,8 +303,6 @@ export default function SummaryPage() {
       }
     } catch (error) {
       console.error('Error deleting spending:', error);
-    } finally {
-      setDeletingSpending(null);
     }
   };
 
@@ -326,79 +331,9 @@ export default function SummaryPage() {
     }
   };
 
-  // Custom day renderer for Calendar
-  const modifiers = {
-    hasData: (date: Date) => {
-      return tasks.some((t) => isSameDay(parseISO(t.date), date));
-    },
-  };
-
-  const modifiersStyles = {
-    hasData: {
-      fontWeight: 'bold',
-    },
-  };
-
-  const calculateStreak = () => {
-    if (tasks.length === 0) return 0;
-
-    // Sort tasks by date descending (newest first)
-    const sortedTasks = [...tasks].sort(
-      (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime(),
-    );
-
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-
-    let streak = 0;
-    let checkDate = today;
-
-    // Check if the most recent task is today or yesterday
-    const mostRecentTask = sortedTasks[0];
-    if (!mostRecentTask) return 0;
-
-    const mostRecentDate = parseISO(mostRecentTask.date);
-    mostRecentDate.setHours(0, 0, 0, 0);
-
-    // If the most recent data is older than yesterday, streak is broken (0)
-    const diffTime = Math.abs(today.getTime() - mostRecentDate.getTime());
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-
-    if (diffDays > 1) {
-      return 0;
-    }
-
-    // Start checking from the most recent task date
-    checkDate = mostRecentDate;
-
-    for (const task of sortedTasks) {
-      const taskDate = parseISO(task.date);
-      taskDate.setHours(0, 0, 0, 0);
-
-      // Skip if we have multiple entries for same day (shouldn't happen but safety)
-      if (taskDate.getTime() > checkDate.getTime()) continue;
-
-      // If gap found
-      if (taskDate.getTime() < checkDate.getTime()) {
-        break;
-      }
-
-      // Check completion
-      const { percentage } = getDayStatus(task);
-      if (percentage > 0) {
-        streak++;
-        // Move to expected previous day
-        checkDate.setDate(checkDate.getDate() - 1);
-      } else {
-        break; // Streak broken by 0% day
-      }
-    }
-
-    return streak;
-  };
-
   const calculateMonthlySpending = () => {
-    return tasks
+    const filteredTasks = getFilteredTasks();
+    return filteredTasks
       .reduce(
         (acc, t) =>
           acc + (t.spendings?.reduce((s, sp) => s + sp.amount, 0) || 0),
@@ -408,19 +343,171 @@ export default function SummaryPage() {
   };
 
   const calculateAverageCompletion = () => {
-    if (tasks.length === 0) return 0;
-    const totalPercentage = tasks.reduce((acc, task) => {
+    const filteredTasks = getFilteredTasks();
+    if (filteredTasks.length === 0) return 0;
+    const totalPercentage = filteredTasks.reduce((acc, task) => {
       const { percentage } = getDayStatus(task);
       return acc + percentage;
     }, 0);
-    return Math.round(totalPercentage / tasks.length);
+    return Math.round(totalPercentage / filteredTasks.length);
   };
+
+  const getFilteredTasks = () => {
+    let filtered = [...tasks];
+    
+    // Filter by date range
+    if (dateRangeStart && dateRangeEnd) {
+      filtered = filtered.filter((task) => {
+        const taskDate = parseISO(task.date);
+        return isWithinInterval(taskDate, { start: dateRangeStart, end: dateRangeEnd });
+      });
+    }
+    
+    return filtered;
+  };
+
+  const calculateTaskStats = () => {
+    if (!selectedTaskFilter) return null;
+    
+    const filteredTasks = getFilteredTasks();
+    let completedCount = 0;
+    let totalCount = 0;
+
+    filteredTasks.forEach((task) => {
+      const completion = task.taskCompletions?.find(
+        (c) => c.taskTemplate.id === selectedTaskFilter
+      );
+      if (completion) {
+        totalCount++;
+        if (completion.completed) {
+          completedCount++;
+        }
+      }
+    });
+
+    return { completedCount, totalCount, percentage: totalCount > 0 ? Math.round((completedCount / totalCount) * 100) : 0 };
+  };
+
+  const clearFilters = () => {
+    setDateRangeStart(undefined);
+    setDateRangeEnd(undefined);
+    setSelectedTaskFilter('');
+  };
+
+  const hasActiveFilters = dateRangeStart || dateRangeEnd || selectedTaskFilter;
 
   return (
     <div className='h-screen flex flex-col bg-background overflow-hidden'>
       {/* Main Content */}
       <main className='flex-1 overflow-y-auto pb-20 pt-16'>
         <div className='container mx-auto px-4 py-6 space-y-6 max-w-4xl flex flex-col items-center'>
+          
+          {/* Filters Section */}
+          <Card className='w-full max-w-md'>
+            <CardHeader>
+              <div className='flex items-center justify-between'>
+                <CardTitle className='text-lg'>Filtry</CardTitle>
+                {hasActiveFilters && (
+                  <Button
+                    variant='ghost'
+                    size='sm'
+                    onClick={clearFilters}
+                    className='h-8 gap-1'
+                  >
+                    <X className='h-4 w-4' />
+                    Wyczyść
+                  </Button>
+                )}
+              </div>
+            </CardHeader>
+            <CardContent className='space-y-4'>
+              {/* Date Range Filter */}
+              <div className='space-y-2'>
+                <Label className='text-sm font-medium'>Zakres dat</Label>
+                <div className='grid grid-cols-2 gap-2'>
+                  <div>
+                    <Label htmlFor='dateStart' className='text-xs text-muted-foreground'>
+                      Od
+                    </Label>
+                    <Input
+                      id='dateStart'
+                      type='date'
+                      value={dateRangeStart ? format(dateRangeStart, 'yyyy-MM-dd') : ''}
+                      onChange={(e) => setDateRangeStart(e.target.value ? new Date(e.target.value) : undefined)}
+                      className='text-sm'
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor='dateEnd' className='text-xs text-muted-foreground'>
+                      Do
+                    </Label>
+                    <Input
+                      id='dateEnd'
+                      type='date'
+                      value={dateRangeEnd ? format(dateRangeEnd, 'yyyy-MM-dd') : ''}
+                      onChange={(e) => setDateRangeEnd(e.target.value ? new Date(e.target.value) : undefined)}
+                      className='text-sm'
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Task Filter */}
+              <div className='space-y-2'>
+                <Label htmlFor='taskFilter' className='text-sm font-medium'>
+                  Zadanie do analizy
+                </Label>
+                <select
+                  id='taskFilter'
+                  value={selectedTaskFilter}
+                  onChange={(e) => setSelectedTaskFilter(e.target.value)}
+                  className='w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring'
+                >
+                  <option value=''>Wybierz zadanie...</option>
+                  {availableTasks.map((task) => {
+                    return (
+                      <option key={task.id} value={task.id}>
+                        {task.name}
+                      </option>
+                    );
+                  })}
+                </select>
+              </div>
+
+              {/* Task Stats Display */}
+              {selectedTaskFilter && (() => {
+                const stats = calculateTaskStats();
+                const selectedTask = availableTasks.find(t => t.id === selectedTaskFilter);
+                const Icon = selectedTask ? ICON_MAP[selectedTask.icon] || CheckSquare : CheckSquare;
+                
+                return stats ? (
+                  <Card className='bg-secondary/20 border-secondary'>
+                    <CardContent className='p-4'>
+                      <div className='flex items-center gap-3 mb-2'>
+                        <Icon className='h-5 w-5 text-secondary' />
+                        <h4 className='font-semibold text-sm'>{selectedTask?.name}</h4>
+                      </div>
+                      <div className='grid grid-cols-3 gap-2 text-center'>
+                        <div>
+                          <p className='text-2xl font-bold text-green-600'>{stats.completedCount}</p>
+                          <p className='text-xs text-muted-foreground'>Wykonane</p>
+                        </div>
+                        <div>
+                          <p className='text-2xl font-bold'>{stats.totalCount}</p>
+                          <p className='text-xs text-muted-foreground'>Razem dni</p>
+                        </div>
+                        <div>
+                          <p className='text-2xl font-bold text-blue-600'>{stats.percentage}%</p>
+                          <p className='text-xs text-muted-foreground'>Skuteczność</p>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ) : null;
+              })()}
+            </CardContent>
+          </Card>
+
           <Card className='w-full max-w-md'>
             <CardHeader>
               <CardTitle className='text-center'>
@@ -436,8 +523,6 @@ export default function SummaryPage() {
                 onMonthChange={handleMonthChange}
                 locale={pl}
                 disabled={(date) => date > new Date()}
-                modifiers={modifiers}
-                modifiersStyles={modifiersStyles}
                 components={{
                   DayButton: (props) => {
                     const { day } = props;
@@ -482,7 +567,7 @@ export default function SummaryPage() {
                   {calculateMonthlySpending()} zł
                 </p>
                 <p className='text-xs text-muted-foreground'>
-                  Wydatki (miesiąc)
+                  {hasActiveFilters ? 'Wydatki (filtr)' : 'Wydatki (miesiąc)'}
                 </p>
               </CardContent>
             </Card>
@@ -493,10 +578,23 @@ export default function SummaryPage() {
                   {calculateAverageCompletion()}%
                 </p>
                 <p className='text-xs text-muted-foreground'>
-                  Średnie wykonanie
+                  {hasActiveFilters ? 'Średnia (filtr)' : 'Średnie wykonanie'}
                 </p>
               </CardContent>
             </Card>
+            {hasActiveFilters && (
+              <Card className='col-span-2'>
+                <CardContent className='p-4 text-center flex flex-col items-center justify-center'>
+                  <CalendarIcon className='h-8 w-8 text-purple-500 mb-2' />
+                  <p className='text-2xl font-bold'>
+                    {getFilteredTasks().length}
+                  </p>
+                  <p className='text-xs text-muted-foreground'>
+                    Dni w filtrze
+                  </p>
+                </CardContent>
+              </Card>
+            )}
           </div>
         </div>
       </main>
